@@ -5,10 +5,11 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class AppTest {
-
+	App myApp;
 	@Test
 	public void test() {
-		assertEquals("Hello!", App.main("Hello!"));
+		myApp = new App();
+		assertEquals("Hello!", myApp.main("Hello!"));
 	}
 
 }
