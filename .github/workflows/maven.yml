@@ -19,6 +19,7 @@ jobs:
               -Pcoveralls,pit, sonar:sonar
               -Dsonar.organization=mihailteodor-github
               -Dsonar.host.url=https://sonarcloud.io
+              -Dsonar.projectKey=MihailTeodor_attsw-final-project
               -DrepoToken=$COVERALLS_REPO_TOKEN 
               -DpullRequest=${{ github.event.pull_request.number }}
         
