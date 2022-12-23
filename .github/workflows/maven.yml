@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      workdir: library
     strategy:
       matrix:
         # test against several Java versions:
@@ -14,7 +16,7 @@ jobs:
           - java: 8
           - java: 11  
             additional-maven-args: >
-              -Pcoveralls
+              -Pcoveralls,pit
               -DrepoToken=$COVERALLS_REPO_TOKEN 
               -DpullRequest=${{ github.event.pull_request.number }}
         
@@ -33,18 +35,21 @@ jobs:
         restore-keys: ${{ runner.os }}-m2-    
     - name: Build with Maven
       run: > 
-        mvn -f library/pom.xml 
-        verify ${{ matrix.additional-maven-args }}
+        mvn verify ${{ matrix.additional-maven-args }}
+      working-directory: ${{ env.workdir }}
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}  
     - name: Generate JUnit Report
       run: >
-        mvn -f library/pom.xml    
-        surefire-report:report-only site:site -DgenerateReports=false
+        mvn surefire-report:report-only site:site -DgenerateReports=false
+      working-directory: ${{ env.workdir }}  
       if: ${{ always() }}  
     - name: Archive JUnit Report
       uses: actions/upload-artifact@v2
       if: ${{ failure() }}
       with:
-        name: surefire-report-jdk-${{ matrix.java }}
-        path: '**/target/site'          
+        name: surefire&pit-reports-jdk-${{ matrix.java }}
+        path: |
+          **/target/site
+          **/target/pit-reports
+            
