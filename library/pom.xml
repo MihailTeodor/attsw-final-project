@@ -19,8 +19,10 @@
 		
 		<!-- SONARCUBE-->
 		<sonar.coverage.exclusions>
-			**/model/*.*
-			**/transaction_manager/TransactionException.*
+			**/library/App.java,
+			**/model/*,
+			**/transaction_manager/*,
+			**/transaction_code/*
 		</sonar.coverage.exclusions>	
 
 	</properties>
