@@ -20,6 +20,7 @@
 		<!-- SONARCUBE-->
 		<sonar.coverage.exclusions>
 			**/model/*.*
+			**/transaction_manager/TransactionException.*
 		</sonar.coverage.exclusions>	
 
 	</properties>
@@ -63,6 +64,7 @@
 					<configuration>
 						<excludes>
 							<exclude>**/model/*.*</exclude>
+							<exclude>**/transaction_manager/TransactionException.*</exclude>
 						</excludes>
 					</configuration>
 					<executions>
