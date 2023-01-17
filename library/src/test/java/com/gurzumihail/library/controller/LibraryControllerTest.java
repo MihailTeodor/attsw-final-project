@@ -1,6 +1,7 @@
 package com.gurzumihail.library.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.ignoreStubs;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.spy;
@@ -29,13 +30,15 @@ import com.gurzumihail.library.model.User;
 import com.gurzumihail.library.repository.BookRepository;
 import com.gurzumihail.library.repository.UserRepository;
 import com.gurzumihail.library.transaction_code.TransactionCode;
+import com.gurzumihail.library.transaction_manager.TransactionException;
 import com.gurzumihail.library.transaction_manager.TransactionManager;
 import com.gurzumihail.library.view.LibraryView;
 
 public class LibraryControllerTest {
 	
+	private static final String TRANSACTION_EXCEPTION_MSG = "TRANSACTION EXCEPTION";
+
 	private static final int USER_ID_1 = 1;
-	private static final int USER_ID_2 = 2;
 	
 	private static final int BOOK_ID_1 = 1;
 	private static final int BOOK_ID_2 = 2;
@@ -70,7 +73,7 @@ public class LibraryControllerTest {
 	
 	
 	@Before
-	public void setup() {
+	public void setup() throws TransactionException {
 		closeable = MockitoAnnotations.openMocks(this);
 		
 		when(transactionManager.doInTransaction(any())).thenAnswer(
@@ -85,7 +88,7 @@ public class LibraryControllerTest {
 	
 	
 	@Test
-	public void testAllUsers() {
+	public void testAllUsers() throws TransactionException {
 		List<User> users = asList(createTestUser(USER_ID_1, USER_NAME_1));
 		when(userRepository.findAll()).thenReturn(users);
 		
@@ -98,7 +101,18 @@ public class LibraryControllerTest {
 
 	
 	@Test
-	public void testAllBooks() {
+	public void testAllUsersWhenTransactionExceptionIsThrown() throws TransactionException {
+		doThrow(new TransactionException(TRANSACTION_EXCEPTION_MSG)).when(transactionManager).doInTransaction(any());
+		
+		libController.allUsers();
+		
+		verify(libView).showError(TRANSACTION_EXCEPTION_MSG);
+		verifyNoMoreInteractions(libView);
+	}
+	
+	
+	@Test
+	public void testAllBooks() throws TransactionException {
 		List<Book> books = asList(createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));
 		when(bookRepository.findAll()).thenReturn(books);
 		
@@ -108,10 +122,21 @@ public class LibraryControllerTest {
 		verify(bookRepository).findAll();
 		verify(libView).showBooks(books);
 	}
+ 
 
+	@Test
+	public void testAllBooksWhenTransactionExceptionIsThrown() throws TransactionException {
+		doThrow(new TransactionException(TRANSACTION_EXCEPTION_MSG)).when(transactionManager).doInTransaction(any());
+		
+		libController.allBooks();
+		
+		verify(libView).showError(TRANSACTION_EXCEPTION_MSG);
+		verifyNoMoreInteractions(libView);
+	}
+	
 	
 	@Test
-	public void testAddUserWhenUserAlreadyExists() {
+	public void testAddUserWhenUserAlreadyExists() throws TransactionException {
 		User existingUser = createTestUser(USER_ID_1, USER_NAME_1);
 		User userToAdd = createTestUser(USER_ID_1, USER_NAME_2);
 		when(userRepository.findById(USER_ID_1)).thenReturn(existingUser);
@@ -125,8 +150,9 @@ public class LibraryControllerTest {
 	}
 	
 	
+	
 	@Test
-	public void testAddUserWhenUserDoesNotAlreadyExist() {
+	public void testAddUserWhenUserDoesNotAlreadyExist() throws TransactionException {
 		User userToAdd = createTestUser(USER_ID_1, USER_NAME_1);
 		when(userRepository.findById(USER_ID_1)).thenReturn(null);
 		
@@ -141,7 +167,18 @@ public class LibraryControllerTest {
 
 	
 	@Test
-	public void testAddBookWhenBookAlreadyExists() {
+	public void testAddUserWhenTransactionExceptionIsThrown() throws TransactionException {
+		doThrow(new TransactionException(TRANSACTION_EXCEPTION_MSG)).when(transactionManager).doInTransaction(any());
+		
+		libController.addUser(createTestUser(USER_ID_1, USER_NAME_1));
+		
+		verify(libView).showError(TRANSACTION_EXCEPTION_MSG);
+		verifyNoMoreInteractions(libView);
+	}
+
+	
+	@Test
+	public void testAddBookWhenBookAlreadyExists() throws TransactionException {
 		Book existingBook = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book bookToAdd = createTestBook(BOOK_ID_1, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		when(bookRepository.findById(BOOK_ID_1)).thenReturn(existingBook);
@@ -156,7 +193,7 @@ public class LibraryControllerTest {
 	
 
 	@Test
-	public void testAddBookWhenBookDoesNotAlreadyExist() {
+	public void testAddBookWhenBookDoesNotAlreadyExist() throws TransactionException {
 		Book bookToAdd = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		when(bookRepository.findById(BOOK_ID_1)).thenReturn(null);
 		
@@ -169,12 +206,22 @@ public class LibraryControllerTest {
 		inOrder.verify(libView).bookAdded(bookToAdd);
 	}
 
+	
+	@Test
+	public void testAddBookWhenTransactionExceptionIsThrown() throws TransactionException {
+		doThrow(new TransactionException(TRANSACTION_EXCEPTION_MSG)).when(transactionManager).doInTransaction(any());
+		
+		libController.addBook(createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));
+		
+		verify(libView).showError(TRANSACTION_EXCEPTION_MSG);
+		verifyNoMoreInteractions(libView);
+	}
+
 
 	@Test
-	public void testDeleteUserWhenUserDoesNotExist() {
+	public void testDeleteUserWhenUserDoesNotExist() throws TransactionException {
 		User userToDelete = createTestUser(USER_ID_1, USER_NAME_1);
-		when(userRepository.findById(USER_ID_1))
-		.thenReturn(null);
+		when(userRepository.findById(USER_ID_1)).thenReturn(null);
 		
 		libController.deleteUser(userToDelete);
 		
@@ -186,7 +233,7 @@ public class LibraryControllerTest {
 
 	
 	@Test
-	public void testDeleteUserWhenExistsAndHasBorrowedBooks() {
+	public void testDeleteUserWhenExistsAndHasBorrowedBooks() throws TransactionException {
 		User userToDelete = createTestUser(USER_ID_1, USER_NAME_1);
 		Book book = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Set<Book> borrowedBooks = new HashSet<>();
@@ -204,7 +251,7 @@ public class LibraryControllerTest {
 	
 	
 	@Test
-	public void testDeleteUserWhenUserExistsAndHasReturnedAllBorrowedBooks() {
+	public void testDeleteUserWhenUserExistsAndHasReturnedAllBorrowedBooks() throws TransactionException {
 		User userToDelete = createTestUser(USER_ID_1, USER_NAME_1);
 		Set<Book> rentedBooks = new HashSet<>();
 		userToDelete.setRentedBooks(rentedBooks);
@@ -221,7 +268,18 @@ public class LibraryControllerTest {
 
 
 	@Test
-	public void testDeleteBookWhenBookDoesNotExist() {
+	public void testDeleteUserWhenTransactionExceptionIsThrown() throws TransactionException {
+		doThrow(new TransactionException(TRANSACTION_EXCEPTION_MSG)).when(transactionManager).doInTransaction(any());
+		
+		libController.deleteUser(createTestUser(USER_ID_1, USER_NAME_1));
+		
+		verify(libView).showError(TRANSACTION_EXCEPTION_MSG);
+		verifyNoMoreInteractions(libView);
+	}
+
+	
+	@Test
+	public void testDeleteBookWhenBookDoesNotExist() throws TransactionException {
 		Book bookToDelete = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		when(bookRepository.findById(BOOK_ID_1)).thenReturn(null);
 		
@@ -235,7 +293,7 @@ public class LibraryControllerTest {
 	
 	
 	@Test
-	public void testDeleteBookWhenBookIsBorrowed() {
+	public void testDeleteBookWhenBookIsBorrowed() throws TransactionException {
 		Book bookToDelete = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		bookToDelete.setAvailable(false);
 		bookToDelete.setUserID(USER_ID_1);
@@ -251,7 +309,7 @@ public class LibraryControllerTest {
 	
 	
 	@Test 
-	public void testDeleteBookWhenBookExistsAndNotBorrowed() {
+	public void testDeleteBookWhenBookExistsAndNotBorrowed() throws TransactionException {
 		Book bookToDelete = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		when(bookRepository.findById(BOOK_ID_1)).thenReturn(bookToDelete);
 		
@@ -266,7 +324,18 @@ public class LibraryControllerTest {
 
 	
 	@Test
-	public void testBorrowBookWhenBookIsNotAvailable() {
+	public void testDeleteBookWhenTransactionExceptionIsThrown() throws TransactionException {
+		doThrow(new TransactionException(TRANSACTION_EXCEPTION_MSG)).when(transactionManager).doInTransaction(any());
+		
+		libController.deleteBook(createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));
+		
+		verify(libView).showError(TRANSACTION_EXCEPTION_MSG);
+		verifyNoMoreInteractions(libView);
+	}
+
+	
+	@Test
+	public void testBorrowBookWhenBookIsNotAvailable() throws TransactionException {
 		User user = createTestUser(USER_ID_1, USER_NAME_1); 
 		Book book = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		book.setAvailable(false);
@@ -283,7 +352,7 @@ public class LibraryControllerTest {
 	
 	
 	@Test
-	public void testBorrowBookWhenBookIsAvailable() {
+	public void testBorrowBookWhenBookIsAvailable() throws TransactionException {
 		User user = spy(createTestUser(USER_ID_1, USER_NAME_1)); 
 		Book book = spy(createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));
 		when(bookRepository.findById(BOOK_ID_1)).thenReturn(book);
@@ -303,7 +372,19 @@ public class LibraryControllerTest {
 	
 	
 	@Test
-	public void testReturnBook() {
+	public void testBorrowBookWhenTransactionExceptionIsThrown() throws TransactionException {
+		doThrow(new TransactionException(TRANSACTION_EXCEPTION_MSG)).when(transactionManager).doInTransaction(any());
+		
+		libController.borrowBook(createTestUser(USER_ID_1, USER_NAME_1), 
+				createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));
+		
+		verify(libView).showError(TRANSACTION_EXCEPTION_MSG);
+		verifyNoMoreInteractions(libView);
+	}
+
+	
+	@Test
+	public void testReturnBook() throws TransactionException {
 		User user = spy(createTestUser(USER_ID_1, USER_NAME_1));
 		user.setId(1);
 		Book book = spy(createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));
@@ -326,6 +407,18 @@ public class LibraryControllerTest {
 		inOrder.verify(libView).bookReturned(book);
 	}
 	
+	
+	@Test
+	public void testReturnBookWhenTransactionExceptionIsThrown() throws TransactionException {
+		doThrow(new TransactionException(TRANSACTION_EXCEPTION_MSG)).when(transactionManager).doInTransaction(any());
+		
+		libController.returnBook(createTestUser(USER_ID_1, USER_NAME_1),
+				createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));
+		
+		verify(libView).showError(TRANSACTION_EXCEPTION_MSG);
+		verifyNoMoreInteractions(libView);
+	}
+
 	
 	private User createTestUser(int id, String name) {
 		User user = new User(id, name, new HashSet<>());
