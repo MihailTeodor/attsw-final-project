@@ -138,11 +138,12 @@
 						<targetClasses>
 							<param>com.gurzumihail.library.controller.LibraryController</param>
 							<param>com.gurzumihail.library.repository.mongo.BookRepositoryMongo</param>
+							<param>com.gurzumihail.library.repository.mongo.UserRepositoryMongo</param>
 						</targetClasses>
 						<targetTests>
 							<param>com.gurzumihail.library.controller.LibraryControllerTest</param>
 							<param>com.gurzumihail.library.repository.mongo.BookRepositoryMongoIT</param>
-
+							<param>com.gurzumihail.library.repository.mongo.UserRepositoryMongoIT</param>
 						</targetTests>
 						<mutators>
 							<mutator>DEFAULTS</mutator>

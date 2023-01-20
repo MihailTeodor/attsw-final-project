@@ -116,6 +116,7 @@ public class BookRepositoryMongoIT {
 		
 		assertThat(readAllBooksFromDatabase()).hasSize(1);
 		assertThat(readAllBooksFromDatabase().get(0).getId()).isEqualTo(BOOK_ID_1);
+		assertThat(readAllBooksFromDatabase().get(0).getTitle()).isEqualTo(BOOK_TITLE_2);
 	}
 	
 	@Test
