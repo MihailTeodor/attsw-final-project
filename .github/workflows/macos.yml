@@ -1,23 +1,22 @@
-name: Java CI with Maven for PR on Windows & Mac
+name: Java CI with Maven for PR on Mac
 
 on:
+  push:
   pull_request:
   
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        # test against several OS-es:
-        os: [ macos-latest, windows-latest ]
+    runs-on: macos-latest
         
-    name: Build with Java 11 on ${{ matrix.os }}
+    name: Build with Java 11 on macOs
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 11
       uses: actions/setup-java@v1
       with:
         java-version: 11
+    - name: Install Docker
+      uses: docker-practice/actions-setup-docker@master    
     - name: Cache Maven packages
       uses: actions/cache@v2
       with:
@@ -25,4 +24,5 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '**/*.yml') }}
         restore-keys: ${{ runner.os }}-m2-    
     - name: Build with Maven
-      run: mvn -f library/pom.xml clean verify      
+      run: mvn verify
+      working-directory: library      
