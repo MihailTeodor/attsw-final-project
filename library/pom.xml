@@ -16,14 +16,19 @@
 		<junit.version>4.13.2</junit.version>
 		<assertj.version>3.23.1</assertj.version>
 		<mockito.version>4.11.0</mockito.version>
-		
+		<mongodb.version>3.12.11</mongodb.version>
+		<logback.version>1.4.5</logback.version>
+		<codehaus.mojo.version>3.3.0</codehaus.mojo.version>
+		<testcontainers.version>1.17.6</testcontainers.version>
+		<failsafe.version>3.0.0-M8</failsafe.version>
+
 		<!-- SONARCUBE-->
 		<sonar.coverage.exclusions>
 			**/library/App.java,
 			**/model/*,
 			**/transaction_manager/*,
 			**/transaction_code/*
-		</sonar.coverage.exclusions>	
+		</sonar.coverage.exclusions>
 
 	</properties>
 
@@ -46,8 +51,31 @@
 			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>${mongodb.version}</version>
+		</dependency>
+		<dependency>
+			<!-- required to see Mongo Java Driver logs -->
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mongodb</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -109,9 +137,12 @@
 					<configuration>
 						<targetClasses>
 							<param>com.gurzumihail.library.controller.LibraryController</param>
+							<param>com.gurzumihail.library.repository.mongo.BookRepositoryMongo</param>
 						</targetClasses>
 						<targetTests>
 							<param>com.gurzumihail.library.controller.LibraryControllerTest</param>
+							<param>com.gurzumihail.library.repository.mongo.BookRepositoryMongoIT</param>
+
 						</targetTests>
 						<mutators>
 							<mutator>DEFAULTS</mutator>
@@ -126,8 +157,45 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+
+		<plugins>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${codehaus.mojo.version}</version>
+				<executions>
+					<execution>
+						<id>add-test-source</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/it/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${failsafe.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
 	</build>
-	
+
 	<profiles>
 		<profile>
 			<id>jacoco</id>

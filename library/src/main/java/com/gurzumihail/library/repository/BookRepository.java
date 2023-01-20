@@ -10,9 +10,9 @@ public interface BookRepository {
 	
 	Book findById(int id);
 	
-	void save(Book user);
+	void save(Book book);
 	
-	void update(Book user);
+	void update(Book book);
 	
 	void deleteById(int id);
 }
