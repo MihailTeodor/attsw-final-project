@@ -50,14 +50,14 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
     - name: Generate JUnit Report
       run: >
-        mvn surefire-report:report-only site:site -DgenerateReports=false
+        mvn surefire-report:report-only surefire-report:failsafe-report-only site:site -DgenerateReports=false
       working-directory: ${{ env.workdir }}  
       if: ${{ always() }}  
-    - name: Archive JUnit Report
+    - name: Archive Reports
       uses: actions/upload-artifact@v2
       if: ${{ failure() }}
       with:
-        name: surefire&pit-reports-jdk-${{ matrix.java }}
+        name: reports-jdk-${{ matrix.java }}
         path: |
           **/target/site
           **/target/pit-reports

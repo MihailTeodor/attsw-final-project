@@ -429,22 +429,4 @@ public class LibraryControllerTest {
 		Book book = new Book(id, title, author);
 		return book;
 	}
-	 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 }
