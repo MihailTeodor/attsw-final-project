@@ -26,8 +26,6 @@
 		<sonar.coverage.exclusions>
 			**/library/App.java,
 			**/model/*,
-			**/transaction_manager/*,
-			**/transaction_code/*
 		</sonar.coverage.exclusions>
 
 	</properties>
@@ -94,7 +92,7 @@
 					<configuration>
 						<excludes>
 							<exclude>**/model/*.*</exclude>
-							<exclude>**/transaction_manager/TransactionException.*</exclude>
+							<exclude>**/library/App.*</exclude>
 						</excludes>
 					</configuration>
 					<executions>
@@ -135,16 +133,12 @@
 						</execution>
 					</executions>
 					<configuration>
-						<targetClasses>
-							<param>com.gurzumihail.library.controller.LibraryController</param>
-							<param>com.gurzumihail.library.repository.mongo.BookRepositoryMongo</param>
-							<param>com.gurzumihail.library.repository.mongo.UserRepositoryMongo</param>
-						</targetClasses>
-						<targetTests>
-							<param>com.gurzumihail.library.controller.LibraryControllerTest</param>
-							<param>com.gurzumihail.library.repository.mongo.BookRepositoryMongoIT</param>
-							<param>com.gurzumihail.library.repository.mongo.UserRepositoryMongoIT</param>
-						</targetTests>
+						<excludedClasses>
+							<param>com.gurzumihail.library.model.*</param>
+							<param>com.gurzumihail.library.App.*</param>
+						</excludedClasses>
+						<excludedTestClasses>
+						</excludedTestClasses>
 						<mutators>
 							<mutator>DEFAULTS</mutator>
 						</mutators>

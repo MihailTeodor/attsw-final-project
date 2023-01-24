@@ -1,6 +1,7 @@
-package com.gurzumihail.library.repository.mongo;
+package com.gurzumihail.library.transaction_manager.mongo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,37 +12,47 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.testcontainers.containers.MongoDBContainer;
 
-import com.mongodb.ServerAddress;
+import com.gurzumihail.library.controller.LibraryController;
 import com.gurzumihail.library.model.Book;
+import com.gurzumihail.library.repository.mongo.BookRepositoryMongo;
+import com.gurzumihail.library.repository.mongo.UserRepositoryMongo;
+import com.gurzumihail.library.transaction_manager.TransactionException;
+import com.gurzumihail.library.view.LibraryView;
 import com.mongodb.MongoClient;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-public class BookRepositoryMongoIT {
+public class TransactionManagerMongoIT {
 
 	private static final String LIBRARY_DB_NAME = "library";
+	private static final String USER_COLLECTION_NAME = "user";
 	private static final String BOOK_COLLECTION_NAME = "book";
-	
+
 	private static final int BOOK_ID_1 = 1;
 	private static final String BOOK_TITLE_1 = "Dune";
 	private static final String BOOK_AUTHOR_1 = "Herbert";
-	
-	private static final int BOOK_ID_2 = 2;
-	private static final String BOOK_TITLE_2 = "Cujo";
-	private static final String BOOK_AUTHOR_2 = "King";
 	
 	@SuppressWarnings("rawtypes")
 	@ClassRule
 	public static final MongoDBContainer mongo = 
 		new MongoDBContainer("mongo:4.4.3");
 	
+	
+	@Mock
+	private LibraryView libView;
+	
 	private MongoClient client;
+	private UserRepositoryMongo userRepository;
 	private BookRepositoryMongo bookRepository;
 	private MongoCollection<Document> bookCollection;
 	private ClientSession session;
+	private TransactionManagerMongo transactionManager;
 	
 	@Before
 	public void setup() {
@@ -50,10 +61,14 @@ public class BookRepositoryMongoIT {
 						mongo.getContainerIpAddress(),
 						mongo.getMappedPort(27017)));
 		session = client.startSession();
-		bookRepository = new BookRepositoryMongo(client, LIBRARY_DB_NAME, BOOK_COLLECTION_NAME, session);
 		MongoDatabase database = client.getDatabase(LIBRARY_DB_NAME);
-		database.drop();
 		bookCollection = database.getCollection(BOOK_COLLECTION_NAME);
+		userRepository = new UserRepositoryMongo(client, LIBRARY_DB_NAME, USER_COLLECTION_NAME, session);
+		bookRepository = new BookRepositoryMongo(client, LIBRARY_DB_NAME, BOOK_COLLECTION_NAME, session);
+		transactionManager = new TransactionManagerMongo(userRepository, bookRepository, session);
+
+		database.drop();
+		
 	}
 	
 	@After
@@ -61,73 +76,31 @@ public class BookRepositoryMongoIT {
 		client.close();
 		session.close();
 	}
-	
-	@Test
-	public void testFindAllWhenDatabaseIsEmpty() {
-		assertThat(bookRepository.findAll()).isEmpty();
-	}
 
 	@Test
-	public void testFindAllWhenDatabaseIsNotEmpty() {
-		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
-		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
-		book1.setAvailable(false);
-		book1.setUserID(3);
-		
-		addTestBookToDatabase(book1);
-		addTestBookToDatabase(book2);
-		
-		assertThat(bookRepository.findAll()).containsExactly(book1, book2);
-	}
-	
-	@Test
-	public void testFindByIdNotFound() {
-		assertThat(bookRepository.findById(BOOK_ID_1)).isNull();
-	}
-	
-	@Test
-	public void testFindByIdFound() {
-		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
-		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
-		addTestBookToDatabase(book1);
-		addTestBookToDatabase(book2);
-		
-		assertThat(bookRepository.findById(BOOK_ID_2)).isEqualTo(book2);
-	}
-	
-	@Test
-	public void testSave() {
+	public void testDoInTransaction() throws TransactionException {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
-		book.setAvailable(false);
-		book.setUserID(3);
 		
-		bookRepository.save(book);
-		
+		transactionManager.doInTransaction((userRepository, bookRepository) -> {
+			addTestBookToDatabase(book);
+			return null;
+		});
+
 		assertThat(readAllBooksFromDatabase()).containsExactly(book);
 	}
 	
 	@Test
-	public void testUpdate() {
-		Book bookToUpdate = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
-		addTestBookToDatabase(bookToUpdate);
-		Book updatedBook = new Book(BOOK_ID_1, BOOK_TITLE_2, BOOK_AUTHOR_2);
-		
-		bookRepository.update(updatedBook);
-		
-		assertThat(readAllBooksFromDatabase()).hasSize(1);
-		assertThat(readAllBooksFromDatabase().get(0).getId()).isEqualTo(BOOK_ID_1);
-		assertThat(readAllBooksFromDatabase().get(0).getTitle()).isEqualTo(BOOK_TITLE_2);
-	}
-	
-	@Test
-	public void testDeleteById() {
+	public void testDoInTransactionWhenTransactionExceptionIsThrown() throws TransactionException {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
-		addTestBookToDatabase(book);
-		
-		bookRepository.deleteById(BOOK_ID_1);
-		
+
+		assertThatThrownBy(() -> transactionManager.doInTransaction((userRepository, bookRepository) -> {
+			addTestBookToDatabase(book);
+			throw new RuntimeException("Exception occoured!");
+		})).isInstanceOf(TransactionException.class).hasMessage("Exception occoured!");
+		assertThat(session.hasActiveTransaction()).isFalse();
 		assertThat(readAllBooksFromDatabase()).isEmpty();
 	}
+
 	
 	private void addTestBookToDatabase(Book book) {
 		bookCollection.insertOne(session,
@@ -138,14 +111,13 @@ public class BookRepositoryMongoIT {
 					.append("available", book.isAvailable())
 					.append("userId", book.getUserID()));
 	}
-	
+
 	private Book fromDocumentToBook(Document d) {
 		Book book = new Book(d.getInteger("id"), d.getString("title"), d.getString("author"));
 		book.setAvailable(d.getBoolean("available"));
 		book.setUserID(d.getInteger("userId"));
 		return book; 
 	}
-
 	
 	private List<Book> readAllBooksFromDatabase() {
 		return StreamSupport
@@ -153,4 +125,21 @@ public class BookRepositoryMongoIT {
 				.map(this::fromDocumentToBook)
 				.collect(Collectors.toList());
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
