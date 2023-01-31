@@ -23,61 +23,53 @@ public class UserRepositoryMySql implements UserRepository {
 	private static final String INSERT = "INSERT INTO user (id, name) VALUES(?,?)";
 
 	private static final String UPDATE = "UPDATE user SET name=? WHERE id=?";
-	
+
 	private static final String DELETE_BY_ID = "DELETE FROM user WHERE id=?";
-	
+
 	private static final String FIND_BY_USER_ID = "SELECT id, title, author, available, userID FROM book WHERE userID=?";
 
-	
 	private Connection connection;
-	
-	
+
 	public UserRepositoryMySql(Connection connection) {
 		this.connection = connection;
 	}
 
-	
 	@Override
 	public List<User> findAll() throws RepositoryException {
-		try {
-			PreparedStatement statement = connection.prepareStatement(FIND_ALL);
-			ResultSet result = statement.executeQuery();
+			try (PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
+				ResultSet result = statement.executeQuery();
 
-			List<User> users = new ArrayList<>();
-			while (result.next()) {
-				users.add(fromQueryResultToUser(result));
-			}
-			return users;
+				List<User> users = new ArrayList<>();
+				while (result.next()) {
+					users.add(fromQueryResultToUser(result));
+				}
+				return users;
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
-
-
 	@Override
 	public User findById(int id) throws RepositoryException {
-		try {
-			PreparedStatement statement = connection.prepareStatement(FIND_BY_ID);
-			statement.setInt(1, id);
-			ResultSet result = statement.executeQuery();
+		User user = null;	
+		try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
+				statement.setInt(1, id);
+				ResultSet result = statement.executeQuery();
 
-			if (result.next())
-				return fromQueryResultToUser(result);
-			return null;
+				if (result.next())
+					user = fromQueryResultToUser(result);
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
-		}
-
+ 		}
+		return user;
 	}
 
 	@Override
 	public void save(User user) throws RepositoryException {
-		try {
-			PreparedStatement statement = connection.prepareStatement(INSERT);
-			statement.setInt(1, user.getId());
-			statement.setString(2, user.getName());
-			statement.executeUpdate();
+			try (PreparedStatement statement = connection.prepareStatement(INSERT)) {
+				statement.setInt(1, user.getId());
+				statement.setString(2, user.getName());
+				statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}
@@ -86,11 +78,10 @@ public class UserRepositoryMySql implements UserRepository {
 
 	@Override
 	public void update(User user) throws RepositoryException {
-		try {
-			PreparedStatement statement = connection.prepareStatement(UPDATE);
-			statement.setString(1, user.getName());
-			statement.setInt(2, user.getId());
-			statement.executeUpdate();
+			try (PreparedStatement statement = connection.prepareStatement(UPDATE)) {
+				statement.setString(1, user.getName());
+				statement.setInt(2, user.getId());
+				statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}
@@ -99,25 +90,23 @@ public class UserRepositoryMySql implements UserRepository {
 
 	@Override
 	public void deleteById(int id) throws RepositoryException {
-		try {
-			PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID);
-			statement.setInt(1, id);
-			statement.executeUpdate();
+			try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
+				statement.setInt(1, id);
+				statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}
-		
+
 	}
-	
+
 	public Set<Book> getBooksByUserID(int id) throws RepositoryException {
-		try {
-			PreparedStatement statement = connection.prepareStatement(FIND_BY_USER_ID);
-			statement.setInt(1, id);
-			ResultSet result = statement.executeQuery();
-			Set<Book> books = new HashSet<>(); 
-			while(result.next())
-				books.add(fromQueryResultToBook(result));
-			return books;
+			try (PreparedStatement statement = connection.prepareStatement(FIND_BY_USER_ID)) {
+				statement.setInt(1, id);
+				ResultSet result = statement.executeQuery();
+				Set<Book> books = new HashSet<>();
+				while (result.next())
+					books.add(fromQueryResultToBook(result));
+				return books;
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}
@@ -133,11 +122,10 @@ public class UserRepositoryMySql implements UserRepository {
 		return book;
 	}
 
-
-	private User fromQueryResultToUser(ResultSet result) throws SQLException, RepositoryException{
-			int id = result.getInt("id");
-			String name = result.getString("name");
-			Set<Book> booksRented = getBooksByUserID(id);
-			return new User(id, name, booksRented);
+	private User fromQueryResultToUser(ResultSet result) throws SQLException, RepositoryException {
+		int id = result.getInt("id");
+		String name = result.getString("name");
+		Set<Book> booksRented = getBooksByUserID(id);
+		return new User(id, name, booksRented);
 	}
 }
