@@ -12,16 +12,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.testcontainers.containers.MongoDBContainer;
 
-import com.gurzumihail.library.controller.LibraryController;
 import com.gurzumihail.library.model.Book;
+import com.gurzumihail.library.repository.RepositoryException;
 import com.gurzumihail.library.repository.mongo.BookRepositoryMongo;
 import com.gurzumihail.library.repository.mongo.UserRepositoryMongo;
-import com.gurzumihail.library.transaction_manager.TransactionException;
-import com.gurzumihail.library.view.LibraryView;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.ClientSession;
@@ -38,14 +34,9 @@ public class TransactionManagerMongoIT {
 	private static final String BOOK_TITLE_1 = "Dune";
 	private static final String BOOK_AUTHOR_1 = "Herbert";
 	
-	@SuppressWarnings("rawtypes")
 	@ClassRule
 	public static final MongoDBContainer mongo = 
-		new MongoDBContainer("mongo:4.4.3");
-	
-	
-	@Mock
-	private LibraryView libView;
+		new MongoDBContainer("mongo:6.0.3");
 	
 	private MongoClient client;
 	private UserRepositoryMongo userRepository;
@@ -54,6 +45,7 @@ public class TransactionManagerMongoIT {
 	private ClientSession session;
 	private TransactionManagerMongo transactionManager;
 	
+	@SuppressWarnings("deprecation")
 	@Before
 	public void setup() {
 		client = new MongoClient(
@@ -78,7 +70,7 @@ public class TransactionManagerMongoIT {
 	}
 
 	@Test
-	public void testDoInTransaction() throws TransactionException {
+	public void testDoInTransaction() throws RepositoryException {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		
 		transactionManager.doInTransaction((userRepository, bookRepository) -> {
@@ -90,13 +82,13 @@ public class TransactionManagerMongoIT {
 	}
 	
 	@Test
-	public void testDoInTransactionWhenTransactionExceptionIsThrown() throws TransactionException {
+	public void testDoInTransactionWhenTransactionExceptionIsThrown() throws RepositoryException {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 
 		assertThatThrownBy(() -> transactionManager.doInTransaction((userRepository, bookRepository) -> {
 			addTestBookToDatabase(book);
 			throw new RuntimeException("Exception occoured!");
-		})).isInstanceOf(TransactionException.class).hasMessage("Exception occoured!");
+		})).isInstanceOf(RepositoryException.class).hasMessage("Exception occoured!");
 		assertThat(session.hasActiveTransaction()).isFalse();
 		assertThat(readAllBooksFromDatabase()).isEmpty();
 	}

@@ -33,16 +33,16 @@ public class BookRepositoryMongoIT {
 	private static final String BOOK_TITLE_2 = "Cujo";
 	private static final String BOOK_AUTHOR_2 = "King";
 	
-	@SuppressWarnings("rawtypes")
 	@ClassRule
 	public static final MongoDBContainer mongo = 
-		new MongoDBContainer("mongo:4.4.3");
+		new MongoDBContainer("mongo:6.0.3");
 	
 	private MongoClient client;
 	private BookRepositoryMongo bookRepository;
 	private MongoCollection<Document> bookCollection;
 	private ClientSession session;
 	
+	@SuppressWarnings("deprecation")
 	@Before
 	public void setup() {
 		client = new MongoClient(
@@ -115,8 +115,7 @@ public class BookRepositoryMongoIT {
 		bookRepository.update(updatedBook);
 		
 		assertThat(readAllBooksFromDatabase()).hasSize(1);
-		assertThat(readAllBooksFromDatabase().get(0).getId()).isEqualTo(BOOK_ID_1);
-		assertThat(readAllBooksFromDatabase().get(0).getTitle()).isEqualTo(BOOK_TITLE_2);
+		assertThat(readAllBooksFromDatabase()).containsExactly(updatedBook);
 	}
 	
 	@Test

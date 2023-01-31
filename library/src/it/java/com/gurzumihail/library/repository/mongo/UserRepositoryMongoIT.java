@@ -1,7 +1,6 @@
 package com.gurzumihail.library.repository.mongo;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,16 +42,16 @@ public class UserRepositoryMongoIT {
 	private static final String BOOK_AUTHOR_2 = "King";
 	
 
-	@SuppressWarnings("rawtypes")
 	@ClassRule
 	public static final MongoDBContainer mongo = 
-		new MongoDBContainer("mongo:4.4.3");
+		new MongoDBContainer("mongo:6.0.3");
 	
 	private MongoClient client;
 	private UserRepositoryMongo userRepository;
 	private MongoCollection<Document> userCollection;
 	private ClientSession session;
 	
+	@SuppressWarnings("deprecation")
 	@Before
 	public void setup() {
 		client = new MongoClient(

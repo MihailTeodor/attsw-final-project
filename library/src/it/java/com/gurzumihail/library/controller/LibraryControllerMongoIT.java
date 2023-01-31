@@ -1,25 +1,16 @@
 package com.gurzumihail.library.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testcontainers.containers.MongoDBContainer;
@@ -28,13 +19,11 @@ import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
 import com.gurzumihail.library.repository.mongo.BookRepositoryMongo;
 import com.gurzumihail.library.repository.mongo.UserRepositoryMongo;
-import com.gurzumihail.library.transaction_manager.TransactionException;
 import com.gurzumihail.library.transaction_manager.mongo.TransactionManagerMongo;
 import com.gurzumihail.library.view.LibraryView;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.ClientSession;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 public class LibraryControllerMongoIT {
@@ -46,23 +35,17 @@ public class LibraryControllerMongoIT {
 	private static final int USER_ID_1 = 1;
 	private static final String USER_NAME_1 = "Mihail";
 	
-	private static final int USER_ID_2 = 2;
-	private static final String USER_NAME_2 = "Teodor";
-	
 	private static final int BOOK_ID_1 = 1;
 	private static final String BOOK_TITLE_1 = "Dune";
 	private static final String BOOK_AUTHOR_1 = "Herbert";
 	
-	private static final int BOOK_ID_2 = 2;
-	private static final String BOOK_TITLE_2 = "Cujo";
-	private static final String BOOK_AUTHOR_2 = "King";
 
 	
-	@SuppressWarnings("rawtypes")
 	@ClassRule
 	public static final MongoDBContainer mongo = 
 		new MongoDBContainer("mongo:4.4.3");
 	
+	@SuppressWarnings("unused")
 	private AutoCloseable closeable;
 	
 	@Mock
@@ -71,12 +54,11 @@ public class LibraryControllerMongoIT {
 	private MongoClient client;
 	private UserRepositoryMongo userRepository;
 	private BookRepositoryMongo bookRepository;
-	private MongoCollection<Document> userCollection;
-	private MongoCollection<Document> bookCollection;
 	private ClientSession session;
 	private TransactionManagerMongo transactionManager;
 	private LibraryController libController;
 	
+	@SuppressWarnings("deprecation")
 	@Before
 	public void setup() {
 		client = new MongoClient(
@@ -86,8 +68,6 @@ public class LibraryControllerMongoIT {
 		session = client.startSession();
 		closeable = MockitoAnnotations.openMocks(this);
 		MongoDatabase database = client.getDatabase(LIBRARY_DB_NAME);
-		userCollection = database.getCollection(USER_COLLECTION_NAME);
-		bookCollection = database.getCollection(BOOK_COLLECTION_NAME);
 		userRepository = new UserRepositoryMongo(client, LIBRARY_DB_NAME, USER_COLLECTION_NAME, session);
 		bookRepository = new BookRepositoryMongo(client, LIBRARY_DB_NAME, BOOK_COLLECTION_NAME, session);
 		transactionManager = new TransactionManagerMongo(userRepository, bookRepository, session);
