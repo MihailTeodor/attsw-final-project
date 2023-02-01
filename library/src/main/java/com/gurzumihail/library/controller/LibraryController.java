@@ -1,11 +1,10 @@
 package com.gurzumihail.library.controller;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
-import com.gurzumihail.library.transaction_manager.TransactionException;
+import com.gurzumihail.library.repository.RepositoryException;
 import com.gurzumihail.library.transaction_manager.TransactionManager;
 import com.gurzumihail.library.view.LibraryView;
 
@@ -26,7 +25,7 @@ public class LibraryController {
 			List<User> users = transactionManager
 					.doInTransaction((userRepository, bookRepository) -> userRepository.findAll());
 			libView.showUsers(users);
-		} catch (TransactionException e) {
+		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());
 		}
 	}
@@ -36,7 +35,7 @@ public class LibraryController {
 			List<Book> books = transactionManager
 					.doInTransaction((userRepository, bookRepository) -> bookRepository.findAll());
 			libView.showBooks(books);
-		} catch (TransactionException e) {
+		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());
 		}
 	}
@@ -53,7 +52,7 @@ public class LibraryController {
 				libView.userAdded(userToAdd);
 				return null;
 			});
-		} catch (TransactionException e) {
+		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());		}
 	}
 
@@ -69,7 +68,7 @@ public class LibraryController {
 				libView.bookAdded(bookToAdd);
 				return null;
 			});
-		} catch (TransactionException e) {
+		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());		}
 	} 
 	
@@ -89,7 +88,7 @@ public class LibraryController {
 				libView.userDeleted(userToDelete);
 				return null;
 			});
-		} catch (TransactionException e) {
+		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());		}
 	}
 	 
@@ -110,7 +109,7 @@ public class LibraryController {
 				libView.bookDeleted(bookToDelete);
 				return null;
 			});
-		} catch (TransactionException e) {
+		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());		}
 	}
 	
@@ -130,7 +129,7 @@ public class LibraryController {
 				libView.bookBorrowed(book);
 				return null;
 			});
-		} catch (TransactionException e) {
+		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());		}
 	}
 	
@@ -145,7 +144,7 @@ public class LibraryController {
 				libView.bookReturned(book);
 				return null;
 			});
-		} catch (TransactionException e) {
+		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());		}
 	} 
 	

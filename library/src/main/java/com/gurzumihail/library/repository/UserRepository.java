@@ -6,14 +6,14 @@ import com.gurzumihail.library.model.User;
 
 public interface UserRepository {
 
-	List<User> findAll();
+	List<User> findAll() throws RepositoryException;
 	
-	User findById(int id);
+	User findById(int id) throws RepositoryException;
 	
-	void save(User user);
+	void save(User user) throws RepositoryException;
 	
-	void update(User user);
+	void update(User user) throws RepositoryException;
 	
-	void deleteById(int id);
+	void deleteById(int id) throws RepositoryException;
 	
 }

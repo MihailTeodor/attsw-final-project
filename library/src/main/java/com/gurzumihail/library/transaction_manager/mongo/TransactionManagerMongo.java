@@ -1,9 +1,9 @@
 package com.gurzumihail.library.transaction_manager.mongo;
 
+import com.gurzumihail.library.repository.RepositoryException;
 import com.gurzumihail.library.repository.mongo.BookRepositoryMongo;
 import com.gurzumihail.library.repository.mongo.UserRepositoryMongo;
 import com.gurzumihail.library.transaction_code.TransactionCode;
-import com.gurzumihail.library.transaction_manager.TransactionException;
 import com.gurzumihail.library.transaction_manager.TransactionManager;
 import com.mongodb.client.ClientSession;
 
@@ -19,7 +19,7 @@ public class TransactionManagerMongo implements TransactionManager {
 		this.session = session;
 	}
 	@Override
-	public <T> T doInTransaction(TransactionCode<T> code) throws TransactionException {
+	public <T> T doInTransaction(TransactionCode<T> code) throws RepositoryException {
 
 		try {
 			session.startTransaction();
@@ -29,7 +29,7 @@ public class TransactionManagerMongo implements TransactionManager {
 			return result;
 		} catch (Exception e) {
 			session.abortTransaction();	
-			throw new TransactionException(e.getMessage(), e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 }

@@ -21,6 +21,7 @@
 		<codehaus.mojo.version>3.3.0</codehaus.mojo.version>
 		<testcontainers.version>1.17.6</testcontainers.version>
 		<failsafe.version>3.0.0-M8</failsafe.version>
+		<mysql.connector.version>8.0.32</mysql.connector.version>
 
 		<!-- SONARCUBE-->
 		<sonar.coverage.exclusions>
@@ -69,6 +70,18 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>mongodb</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.connector.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mysql</artifactId>
 			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -137,8 +150,7 @@
 							<param>com.gurzumihail.library.model.*</param>
 							<param>com.gurzumihail.library.App.*</param>
 						</excludedClasses>
-						<excludedTestClasses>
-						</excludedTestClasses>
+						<excludedTestClasses></excludedTestClasses>
 						<mutators>
 							<mutator>DEFAULTS</mutator>
 						</mutators>
@@ -170,6 +182,20 @@
 							<sources>
 								<source>src/it/java</source>
 							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-test-resource</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>src/it/resources</directory>
+								</resource>
+							</resources>
 						</configuration>
 					</execution>
 				</executions>

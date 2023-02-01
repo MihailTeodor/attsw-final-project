@@ -6,13 +6,13 @@ import com.gurzumihail.library.model.Book;
 
 public interface BookRepository {
 
-	List<Book> findAll();
+	List<Book> findAll() throws RepositoryException;
 	
-	Book findById(int id);
+	Book findById(int id) throws RepositoryException;
 	
-	void save(Book book);
+	void save(Book book) throws RepositoryException;
 	
-	void update(Book book);
+	void update(Book book) throws RepositoryException;
 	
-	void deleteById(int id);
+	void deleteById(int id) throws RepositoryException;
 }
