@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
 import com.gurzumihail.library.repository.RepositoryException;
 import com.gurzumihail.library.repository.MySql.BookRepositoryMySql;
@@ -38,10 +37,6 @@ public class TransactionManagerMySqlIT {
 	private static final int USER_ID_2 = 2;
 	private static final String USER_NAME_2 = "Teodor";
 	
-	private static final int BOOK_ID_2 = 2;
-	private static final String BOOK_TITLE_2 = "Cujo";
-	private static final String BOOK_AUTHOR_2 = "King";
-
 	
 	private static MySQLContainer<?> mySql;
 	
@@ -103,37 +98,31 @@ public class TransactionManagerMySqlIT {
 
 	@Test
 	public void testDoInTransactionWhenMySqlExceptionOccoursThenRepositoryExceptionIsThrown() throws SQLException {
-		Book book = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		
 		assertThatThrownBy(() -> transactionManager.doInTransaction((userRepository, bookRepository) -> {
-			addTestBookToDatabase(book);
-			return null;
-		})).isInstanceOf(RepositoryException.class);
+			throw new RuntimeException("Exception thrown!");
+		})).isInstanceOf(RepositoryException.class).hasMessage("Exception thrown!");
 		verify(connection).setAutoCommit(true);
 	}
 	
 	@Test
 	public void testDoInTransactionWhenExceptionIsThrownDuringRollback() throws SQLException {
-		Book book = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		doThrow(new SQLException("Exception during rollback!")).when(connection).rollback(any());
 		
 			
 		assertThatThrownBy(() -> transactionManager.doInTransaction((userRepository, bookRepository) -> {
-			addTestBookToDatabase(book);
-			return null;
+			throw new RuntimeException("Exception thrown!");
 		})).isInstanceOf(RepositoryException.class).hasMessage("Exception during rollback!");
 	}
 	
 	@Test
 	public void testDoInTransactionWhenExceptionIsThrownDoNotCommit() throws RepositoryException {
-		Book book = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		User user = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
 		
 		try {
 			transactionManager.doInTransaction((userRepository, bookRepository) -> {
 				addTestUserToDatabase(user);
-				addTestBookToDatabase(book);
-				return null;
+				throw new RuntimeException("Exception thrown!");
 			});
 		} catch (RepositoryException e) {
 		}
@@ -176,22 +165,5 @@ public class TransactionManagerMySqlIT {
 			int id = result.getInt("id");
 			String name = result.getString("name");
 			return new User(id, name, Collections.emptySet());
-	}
-	
-
-	private void addTestBookToDatabase(Book book) throws RepositoryException {
-		try {
-			PreparedStatement statement = connection.prepareStatement("INSERT INTO book (id, title, author, available, userId) VALUES(?,?,?,?,?)");
-			statement.setInt(1, book.getId());
-			statement.setString(2, book.getTitle());
-			statement.setString(3, book.getAuthor());
-			statement.setInt(4, book.isAvailable()? 1 : 0);
-			statement.setInt(5,	book.getUserID());
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
 	}	
 }
-
-
