@@ -55,7 +55,6 @@ public class UserRepositoryMySql implements UserRepository {
 		try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
 				statement.setInt(1, id);
 				ResultSet result = statement.executeQuery();
-
 				if (result.next())
 					user = fromQueryResultToUser(result);
 		} catch (SQLException e) {
@@ -73,7 +72,6 @@ public class UserRepositoryMySql implements UserRepository {
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}
-
 	}
 
 	@Override
@@ -85,7 +83,6 @@ public class UserRepositoryMySql implements UserRepository {
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}
-
 	}
 
 	@Override
@@ -96,7 +93,6 @@ public class UserRepositoryMySql implements UserRepository {
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}
-
 	}
 
 	public Set<Book> getBooksByUserID(int id) throws RepositoryException {

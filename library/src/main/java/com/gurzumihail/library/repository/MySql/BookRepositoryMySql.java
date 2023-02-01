@@ -49,7 +49,6 @@ public class BookRepositoryMySql implements BookRepository {
 		try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
 				statement.setInt(1, id);
 				ResultSet result = statement.executeQuery();
-
 				if (result.next())
 					book = fromQueryResultToBook(result);
 		} catch (SQLException e) {
@@ -84,7 +83,6 @@ public class BookRepositoryMySql implements BookRepository {
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}
-
 	}
 
 	@Override
