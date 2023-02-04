@@ -27,6 +27,7 @@
 		<sonar.coverage.exclusions>
 			**/library/App.java,
 			**/model/*,
+			**/library/view/swing/*,
 		</sonar.coverage.exclusions>
 
 	</properties>
@@ -106,6 +107,7 @@
 						<excludes>
 							<exclude>**/model/*.*</exclude>
 							<exclude>**/library/App.*</exclude>
+							<exclude>**/library/view/swing/*.*</exclude>
 						</excludes>
 					</configuration>
 					<executions>
@@ -149,8 +151,11 @@
 						<excludedClasses>
 							<param>com.gurzumihail.library.model.*</param>
 							<param>com.gurzumihail.library.App.*</param>
+							<param>com.gurzumihail.library.view.swing.*</param>
 						</excludedClasses>
-						<excludedTestClasses></excludedTestClasses>
+						<excludedTestClasses>
+							<param>com.gurzumihail.library.view.swing.*</param>
+						</excludedTestClasses>
 						<mutators>
 							<mutator>DEFAULTS</mutator>
 						</mutators>
