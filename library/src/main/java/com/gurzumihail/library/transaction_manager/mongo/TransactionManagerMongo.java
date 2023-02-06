@@ -1,5 +1,9 @@
 package com.gurzumihail.library.transaction_manager.mongo;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.gurzumihail.library.controller.LibraryController;
 import com.gurzumihail.library.repository.RepositoryException;
 import com.gurzumihail.library.repository.mongo.BookRepositoryMongo;
 import com.gurzumihail.library.repository.mongo.UserRepositoryMongo;
@@ -8,6 +12,8 @@ import com.gurzumihail.library.transaction_manager.TransactionManager;
 import com.mongodb.client.ClientSession;
 
 public class TransactionManagerMongo implements TransactionManager {
+
+	private static final Logger LOGGER = LogManager.getLogger(TransactionManagerMongo.class);
 
 	private UserRepositoryMongo userRepo;
 	private BookRepositoryMongo bookRepo;
@@ -25,10 +31,11 @@ public class TransactionManagerMongo implements TransactionManager {
 			session.startTransaction();
 			T result = code.apply(userRepo, bookRepo);
 			session.commitTransaction();
-			
+			LOGGER.info("transaction successfully executed");
 			return result;
 		} catch (Exception e) {
 			session.abortTransaction();	
+			LOGGER.info("exception was thrown", e);
 			throw new RepositoryException(e.getMessage(), e);
 		}
 	}

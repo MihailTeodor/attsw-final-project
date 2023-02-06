@@ -7,6 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
 import com.gurzumihail.library.view.LibraryView;
@@ -18,6 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
 public class LibraryViewSwing extends JFrame implements LibraryView{
+
+	private static final Logger LOGGER = LogManager.getLogger(LibraryViewSwing.class);
 
 	private JPanel contentPane;
 	private JTextField idUserTextField;
@@ -37,7 +42,7 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 					LibraryViewSwing frame = new LibraryViewSwing();
 					frame.setVisible(true);
 				} catch (Exception e) {
-					e.printStackTrace();
+					LOGGER.info("an exception was thrown", e);;
 				}
 			}
 		});
