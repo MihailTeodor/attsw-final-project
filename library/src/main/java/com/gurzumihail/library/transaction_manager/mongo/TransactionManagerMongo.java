@@ -1,9 +1,8 @@
 package com.gurzumihail.library.transaction_manager.mongo;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import com.gurzumihail.library.controller.LibraryController;
 import com.gurzumihail.library.repository.RepositoryException;
 import com.gurzumihail.library.repository.mongo.BookRepositoryMongo;
 import com.gurzumihail.library.repository.mongo.UserRepositoryMongo;

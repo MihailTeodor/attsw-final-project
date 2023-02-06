@@ -4,10 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import com.gurzumihail.library.controller.LibraryController;
 import com.gurzumihail.library.repository.RepositoryException;
 import com.gurzumihail.library.repository.MySql.BookRepositoryMySql;
 import com.gurzumihail.library.repository.MySql.UserRepositoryMySql;

@@ -1,7 +1,5 @@
 package com.gurzumihail.library.view.swing;
 
-import static org.junit.Assert.*;
-
 import org.assertj.swing.annotation.GUITest;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;

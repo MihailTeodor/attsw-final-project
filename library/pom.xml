@@ -22,7 +22,7 @@
 		<testcontainers.version>1.17.6</testcontainers.version>
 		<failsafe.version>3.0.0-M8</failsafe.version>
 		<mysql.connector.version>8.0.32</mysql.connector.version>
-		<log4j.version>1.2.17</log4j.version>
+		<log4j.version>2.19.0</log4j.version>
 
 		<!-- SONARCUBE-->
 		<sonar.coverage.exclusions>
@@ -32,6 +32,18 @@
 		</sonar.coverage.exclusions>
 
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-bom</artifactId>
+				<version>${log4j.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -87,9 +99,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
+			<!-- version taken from the imported BOM -->
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<!-- version taken from the imported BOM -->
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
 		</dependency>
 	</dependencies>
 

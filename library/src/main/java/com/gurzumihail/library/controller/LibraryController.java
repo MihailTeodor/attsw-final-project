@@ -2,15 +2,14 @@ package com.gurzumihail.library.controller;
 
 import java.util.List;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
 import com.gurzumihail.library.repository.RepositoryException;
 import com.gurzumihail.library.transaction_manager.TransactionManager;
 import com.gurzumihail.library.view.LibraryView;
-import com.gurzumihail.library.view.swing.LibraryViewSwing;
 
 public class LibraryController {
 
