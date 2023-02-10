@@ -95,6 +95,7 @@ public class UserRepositoryMySql implements UserRepository {
 		}
 	}
 
+	@Override
 	public List<Book> getRentedBooks(int id) throws RepositoryException {
 			try (PreparedStatement statement = connection.prepareStatement(FIND_BY_USER_ID)) {
 				statement.setInt(1, id);

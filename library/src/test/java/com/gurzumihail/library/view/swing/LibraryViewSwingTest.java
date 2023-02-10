@@ -2,9 +2,11 @@ package com.gurzumihail.library.view.swing;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import javax.swing.DefaultListModel;
 
@@ -15,7 +17,10 @@ import org.assertj.swing.junit.runner.GUITestRunner;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import com.gurzumihail.library.controller.LibraryController;
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
 
@@ -25,34 +30,45 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	private static final int USER_ID_1 = 1;
 	private static final String USER_STR_ID_1 = "1";
 	private static final String USER_NAME_1 = "Mihail";
-	
+
 	private static final int USER_ID_2 = 2;
 	private static final String USER_STR_ID_2 = "2";
 	private static final String USER_NAME_2 = "Teodor";
-	
+
 	private static final int BOOK_ID_1 = 1;
 	private static final String BOOK_STR_ID_1 = "1";
 	private static final String BOOK_TITLE_1 = "Dune";
 	private static final String BOOK_AUTHOR_1 = "Herbert";
-	
+
 	private static final int BOOK_ID_2 = 2;
 	private static final String BOOK_STR_ID_2 = "2";
 	private static final String BOOK_TITLE_2 = "Cujo";
 	private static final String BOOK_AUTHOR_2 = "King";
 
-
 	private FrameFixture window;
 
 	private LibraryViewSwing libraryView;
 
+	@Mock
+	private LibraryController libController;
+
+	private AutoCloseable closeable;
+
 	@Override
 	protected void onSetUp() throws Exception {
+		closeable = MockitoAnnotations.openMocks(this);
 		GuiActionRunner.execute(() -> {
 			libraryView = new LibraryViewSwing();
+			libraryView.setLibraryController(libController);
 			return libraryView;
 		});
 		window = new FrameFixture(robot(), libraryView);
 		window.show();
+	}
+
+	@Override
+	protected void onTearDown() throws Exception {
+		closeable.close();
 	}
 
 	@Test
@@ -224,7 +240,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testShowAllUsersShouldAddUserDescriptionsToTheList() {
+	public void testShowUsersShouldAddUserDescriptionsToTheList() {
 		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
 		GuiActionRunner.execute(
@@ -236,7 +252,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testShowAllBooksShouldAddBookDescriptionsToTheList() {
+	public void testShowBooksShouldAddBookDescriptionsToTheList() {
 		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		GuiActionRunner.execute(
@@ -358,6 +374,114 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		assertThatThrownBy(() -> libraryView.bookReturned(book)).isInstanceOf(UnsupportedOperationException.class).hasMessage("Unsupported operation!");
 	}
-	
 
+	@Test
+	@GUITest
+	public void testAddUserButtonShouldDelegateToLibraryControllerAddUser() {
+		window.textBox("idUserTextField").enterText(USER_STR_ID_1);
+		window.textBox("nameUserTextField").enterText(USER_NAME_1);
+
+		window.button("addUserButton").click();
+
+		verify(libController).addUser(new User(USER_ID_1, USER_NAME_1, new HashSet<>()));
+	}
+
+	@Test
+	@GUITest
+	public void testAddBookButtonShouldDelegateToLibraryControllerAddBook() {
+		window.textBox("idBookTextField").enterText(BOOK_STR_ID_1);
+		window.textBox("titleBookTextField").enterText(BOOK_TITLE_1);
+		window.textBox("authorBookTextField").enterText(BOOK_AUTHOR_1);
+
+		window.button("addBookButton").click();
+
+		verify(libController).addBook(new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));
+	}
+
+	@Test
+	@GUITest
+	public void testUserDeleteButtonShouldDelegateToLibraryControllerDeleteUser() {
+		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
+		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
+		GuiActionRunner.execute(() -> {
+			DefaultListModel<User> userModelList = libraryView.getUserModelList();
+			userModelList.addElement(user1);
+			userModelList.addElement(user2);
+		});
+		window.list("usersList").selectItem(1);
+		window.button("userDeleteButton").click();
+		verify(libController).deleteUser(user2);
+	}
+
+	@Test
+	@GUITest
+	public void testDeleteBookButtonShouldDelegateToLibraryControllerDeleteBook() {
+		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
+		GuiActionRunner.execute(() -> {
+			DefaultListModel<Book> bookModelList = libraryView.getBookModelList();
+			bookModelList.addElement(book1);
+			bookModelList.addElement(book2);
+		});
+		window.list("booksList").selectItem(1);
+	
+		window.button("deleteBookButton").click();
+	
+		verify(libController).deleteBook(book2);
+	}
+	
+	@Test
+	@GUITest
+	public void testBorrowBookButtonShouldDelegateToLibraryControllerBorrowBook() {
+		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
+		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+		GuiActionRunner.execute(() -> {
+			DefaultListModel<User> userModelList = libraryView.getUserModelList();
+			DefaultListModel<Book> bookModelList = libraryView.getBookModelList();
+			userModelList.addElement(user);
+			bookModelList.addElement(book);
+		});
+		window.list("usersList").selectItem(0);
+		window.list("booksList").selectItem(0);
+		
+		window.button("borrowBookButton").click();
+		
+		verify(libController).borrowBook(user, book);
+	}
+	
+	
+	@Test
+	@GUITest
+	public void testReturnBorrowedBookButtonShouldDelegateToLabraryControllerReturnBook() {
+		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
+		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+		GuiActionRunner.execute(() -> {
+			DefaultListModel<User> userModelList = libraryView.getUserModelList();
+			DefaultListModel<Book> borrowedBooksModelList = libraryView.getBorrowedBooksModelList();
+			userModelList.addElement(user);
+			borrowedBooksModelList.addElement(book);
+		});
+		window.list("usersList").selectItem(0);
+		window.list("borrowedBooksList").selectItem(0);
+		
+		window.button("returnBorrowedBookButton").click();
+		
+		verify(libController).returnBook(user, book);
+		
+	}
+	
+	@Test
+	@GUITest
+	public void testWhenUserSelectedShouldDelegateToLibraryControllerAllBorrowedBooks() {
+		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
+		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
+		GuiActionRunner.execute(() -> {
+			DefaultListModel<User> userModelList = libraryView.getUserModelList();
+			userModelList.addElement(user1);
+			userModelList.addElement(user2);
+		});
+		window.list("usersList").selectItem(1);
+		
+		verify(libController).allBorrowedBooks(user2);
+	}
 }

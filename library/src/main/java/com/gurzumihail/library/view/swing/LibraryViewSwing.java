@@ -1,6 +1,7 @@
 package com.gurzumihail.library.view.swing;
 
 import java.awt.EventQueue;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -10,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.gurzumihail.library.controller.LibraryController;
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
 import com.gurzumihail.library.view.LibraryView;
@@ -79,6 +81,13 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 	DefaultListModel<Book> getBorrowedBooksModelList() {
 		return borrowedBooksModelList;
 	}
+	
+	private LibraryController libController;
+	
+	public void setLibraryController(LibraryController controller) {
+		this.libController = controller;
+	}
+	
 	/**
 	 * Launch the application.
 	 */
@@ -241,6 +250,8 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		addUserButton = new JButton("Add User");
 		addUserButton.setName("addUserButton");
 		addUserButton.setEnabled(false);
+		addUserButton.addActionListener(
+				e -> libController.addUser(new User(Integer.parseInt(idUserTextField.getText()), nameUserTextField.getText(), new HashSet<>())));
 		GridBagConstraints gbc_addUserButton = new GridBagConstraints();
 		gbc_addUserButton.anchor = GridBagConstraints.WEST;
 		gbc_addUserButton.insets = new Insets(0, 0, 5, 5);
@@ -274,6 +285,8 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		addBookButton = new JButton("Add Book");
 		addBookButton.setName("addBookButton");
 		addBookButton.setEnabled(false);
+		addBookButton.addActionListener(
+				e -> libController.addBook(new Book(Integer.parseInt(idBookTextField.getText()), titleBookTextField.getText(), authorBookTextField.getText())));;
 		GridBagConstraints gbc_addBookButton = new GridBagConstraints();
 		gbc_addBookButton.anchor = GridBagConstraints.NORTH;
 		gbc_addBookButton.insets = new Insets(0, 0, 5, 0);
@@ -328,6 +341,8 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 					borrowBookButton.setEnabled(
 							(usersList.getSelectedIndex() != -1) &&
 							(booksList.getSelectedIndex() != -1));
+					if(!e.getValueIsAdjusting())
+						libController.allBorrowedBooks(usersList.getSelectedValue());
 				});
 		
 		usersList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -381,6 +396,8 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		userDeleteButton = new JButton("Delete Selected");
 		userDeleteButton.setName("userDeleteButton");
 		userDeleteButton.setEnabled(false);
+		userDeleteButton.addActionListener(
+				e -> libController.deleteUser(usersList.getSelectedValue()));
 		GridBagConstraints gbc_userDeleteButton = new GridBagConstraints();
 		gbc_userDeleteButton.anchor = GridBagConstraints.NORTHWEST;
 		gbc_userDeleteButton.insets = new Insets(0, 0, 5, 5);
@@ -391,6 +408,8 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		returnBorrowedBookButton = new JButton("Return");
 		returnBorrowedBookButton.setName("returnBorrowedBookButton");
 		returnBorrowedBookButton.setEnabled(false);
+		returnBorrowedBookButton.addActionListener(
+				e -> libController.returnBook(usersList.getSelectedValue(), borrowedBooksList.getSelectedValue()));
 		GridBagConstraints gbc_returnBorrowedBookButton = new GridBagConstraints();
 		gbc_returnBorrowedBookButton.anchor = GridBagConstraints.NORTH;
 		gbc_returnBorrowedBookButton.insets = new Insets(0, 0, 5, 5);
@@ -401,6 +420,8 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		borrowBookButton = new JButton("Borrow");
 		borrowBookButton.setName("borrowBookButton");
 		borrowBookButton.setEnabled(false);
+		borrowBookButton.addActionListener(
+				e -> libController.borrowBook(usersList.getSelectedValue(), booksList.getSelectedValue()));
 		GridBagConstraints gbc_borrowBookButton = new GridBagConstraints();
 		gbc_borrowBookButton.anchor = GridBagConstraints.NORTH;
 		gbc_borrowBookButton.fill = GridBagConstraints.HORIZONTAL;
@@ -413,6 +434,8 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		deleteBookButton = new JButton("Delete");
 		deleteBookButton.setName("deleteBookButton");
 		deleteBookButton.setEnabled(false);
+		deleteBookButton.addActionListener(
+				e -> libController.deleteBook(booksList.getSelectedValue()));
 		GridBagConstraints gbc_deleteBookButton = new GridBagConstraints();
 		gbc_deleteBookButton.anchor = GridBagConstraints.NORTHWEST;
 		gbc_deleteBookButton.insets = new Insets(0, 0, 5, 0);
