@@ -11,6 +11,8 @@ public interface LibraryView {
 	
 	void showBooks(List<Book> books);
 	
+	void showBorrowedBooks(List<Book> borrowedBooks);
+	
 	void userAdded(User user);
 	
 	void userUpdated(User user);

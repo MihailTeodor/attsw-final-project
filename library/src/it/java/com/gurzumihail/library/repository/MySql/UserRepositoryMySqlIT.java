@@ -175,15 +175,15 @@ public class UserRepositoryMySqlIT {
 	}
 
 	@Test
-	public void testGetBooksByUserIdWhenUserHasNoBooksRented() throws RepositoryException {
+	public void testGetRentedBooksWhenUserHasNoBooksRented() throws RepositoryException {
 		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		addTestUserToDatabase(user);
 		
-		assertThat(userRepository.getBooksByUserID(1)).isEmpty();
+		assertThat(userRepository.getRentedBooks(1)).isEmpty();
 	}
 	
 	@Test
-	public void testGetBooksByUserIdWhenUserHasBooksRented() throws RepositoryException {
+	public void testGetRentedBooksWhenUserHasBooksRented() throws RepositoryException {
 		User user = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
 		addTestUserToDatabase(user);
 		Book rentedBook = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
@@ -191,15 +191,15 @@ public class UserRepositoryMySqlIT {
 		rentedBook.setUserID(USER_ID_2);
 		addTestBookToDatabase(rentedBook);
 		
-		assertThat(userRepository.getBooksByUserID(USER_ID_2)).containsExactly(rentedBook);
+		assertThat(userRepository.getRentedBooks(USER_ID_2)).containsExactly(rentedBook);
 	}
 
 	@Test
-	public void testGetBooksByUserIdWhenExceptionIsThrown() throws SQLException {
+	public void testGetRentedBooksWhenExceptionIsThrown() throws SQLException {
 
 		connection.close();
 		
-		assertThatThrownBy(() -> userRepository.getBooksByUserID(USER_ID_1)).isInstanceOf(RepositoryException.class);
+		assertThatThrownBy(() -> userRepository.getRentedBooks(USER_ID_1)).isInstanceOf(RepositoryException.class);
 	}
 	
 	private List<User> getAllUsersFromDatabase() throws RepositoryException {

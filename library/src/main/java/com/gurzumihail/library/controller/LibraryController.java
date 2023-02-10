@@ -49,6 +49,18 @@ public class LibraryController {
 		}
 	}
 	
+	public void allBorrowedBooks(User user) {
+		try {
+			List<Book> books = transactionManager
+					.doInTransaction((userRepository, bookRepository) -> userRepository.getRentedBooks(user.getId()));
+			libView.showBorrowedBooks(books);
+			LOGGER.info("All user's borrowed books shown");
+		} catch (RepositoryException e) {
+			libView.showError(e.getMessage());
+			LOGGER.info("an axception was thrown", e);
+		}
+	}
+	
 	public void addUser(User userToAdd) {
 		try {
 			transactionManager.doInTransaction((userRepository, bookRepository) -> {

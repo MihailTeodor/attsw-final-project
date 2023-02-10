@@ -95,11 +95,11 @@ public class UserRepositoryMySql implements UserRepository {
 		}
 	}
 
-	public Set<Book> getBooksByUserID(int id) throws RepositoryException {
+	public List<Book> getRentedBooks(int id) throws RepositoryException {
 			try (PreparedStatement statement = connection.prepareStatement(FIND_BY_USER_ID)) {
 				statement.setInt(1, id);
 				ResultSet result = statement.executeQuery();
-				Set<Book> books = new HashSet<>();
+				List<Book> books = new ArrayList<>();
 				while (result.next())
 					books.add(fromQueryResultToBook(result));
 				return books;
@@ -121,7 +121,7 @@ public class UserRepositoryMySql implements UserRepository {
 	private User fromQueryResultToUser(ResultSet result) throws SQLException, RepositoryException {
 		int id = result.getInt("id");
 		String name = result.getString("name");
-		Set<Book> booksRented = getBooksByUserID(id);
+		Set<Book> booksRented = new HashSet<>(getRentedBooks(id));
 		return new User(id, name, booksRented);
 	}
 }

@@ -2,6 +2,7 @@ package com.gurzumihail.library.repository;
 
 import java.util.List;
 
+import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
 
 public interface UserRepository {
@@ -15,5 +16,7 @@ public interface UserRepository {
 	void update(User user) throws RepositoryException;
 	
 	void deleteById(int id) throws RepositoryException;
+	
+	List<Book> getRentedBooks(int id) throws RepositoryException;
 	
 }

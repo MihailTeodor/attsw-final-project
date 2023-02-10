@@ -28,6 +28,8 @@ import java.awt.Insets;
 
 public class LibraryViewSwing extends JFrame implements LibraryView{
 
+	private static final long serialVersionUID = 7607615145913897146L;
+
 	private static final Logger LOGGER = LogManager.getLogger(LibraryViewSwing.class);
 
 	private JPanel contentPane;
@@ -38,7 +40,6 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 	private JLabel userLabel;
 	private JButton addUserButton;
 	private JScrollPane scrollPane;
-//	private JList usersList;
 	private JLabel usersListLabel;
 	private JButton userDeleteButton;
 	private JScrollPane scrollPane_1;
@@ -46,9 +47,7 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 	private JTextField titleBookTextField;
 	private JTextField authorBookTextField;
 	private JButton addBookButton;
-//	private JList borrowedBooksList;
 	private JScrollPane scrollPane_2;
-//	private JList booksList;
 	private JLabel bookLabel;
 	private JLabel idBookLabel;
 	private JLabel titleBookLabel;
@@ -343,7 +342,6 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		gbc_scrollPane_1.gridy = 6;
 		contentPane.add(scrollPane_1, gbc_scrollPane_1);
 		
-//		borrowedBooksList = new JList();
 		borrowedBooksModelList = new DefaultListModel<>();
 		borrowedBooksList = new JList<Book>(borrowedBooksModelList);
 		borrowedBooksList.addListSelectionListener(
@@ -366,7 +364,6 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		gbc_scrollPane_2.gridy = 6;
 		contentPane.add(scrollPane_2, gbc_scrollPane_2);
 		
-//		booksList = new JList();
 		booksModelList = new DefaultListModel<>();
 		booksList = new JList<>(booksModelList);
 		booksList.addListSelectionListener(
@@ -423,8 +420,6 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		gbc_deleteBookButton.gridy = 7;
 		contentPane.add(deleteBookButton, gbc_deleteBookButton);
 		
-//		usersList = new JList();
-		
 		errorMessageLabel = new JLabel(" ");
 		errorMessageLabel.setName("errorMessageLabel");
 		GridBagConstraints gbc_errorMessageLabel = new GridBagConstraints();
@@ -437,67 +432,69 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 
 	@Override
 	public void showUsers(List<User> users) {
-		// TODO Auto-generated method stub
-		
+		users.stream().forEach(usersModelList::addElement);
 	}
 
 	@Override
 	public void showBooks(List<Book> books) {
-		// TODO Auto-generated method stub
-		
+		books.stream().forEach(booksModelList::addElement);		
+	}
+
+	@Override
+	public void showBorrowedBooks(List<Book> borrowedBooks) {
+		borrowedBooks.stream().forEach(borrowedBooksModelList::addElement);		
 	}
 
 	@Override
 	public void userAdded(User user) {
-		// TODO Auto-generated method stub
-		
+		usersModelList.addElement(user);
+		resetErrorLabel();
 	}
 
 	@Override
 	public void userUpdated(User user) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("Unsupported operation!");
 	}
 
 	@Override
 	public void userDeleted(User user) {
-		// TODO Auto-generated method stub
-		
+		usersModelList.removeElement(user);
+		resetErrorLabel();
 	}
 
 	@Override
 	public void bookAdded(Book book) {
-		// TODO Auto-generated method stub
-		
+		booksModelList.addElement(book);
+		resetErrorLabel();		
 	}
 
 	@Override
 	public void bookUpdated(Book book) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("Unsupported operation!");
 	}
 
 	@Override
 	public void bookDeleted(Book book) {
-		// TODO Auto-generated method stub
-		
+		booksModelList.removeElement(book);
+		resetErrorLabel();
 	}
 
 	@Override
 	public void bookBorrowed(Book book) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("Unsupported operation!");
 	}
 
 	@Override
 	public void bookReturned(Book book) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("Unsupported operation!");
 	}
 
 	@Override
 	public void showError(String message) {
-		// TODO Auto-generated method stub
-		
+		errorMessageLabel.setText(message);
+	}
+
+	private void resetErrorLabel() {
+		errorMessageLabel.setText(" ");
 	}
 }
