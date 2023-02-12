@@ -32,7 +32,6 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	private static final String USER_NAME_1 = "Mihail";
 
 	private static final int USER_ID_2 = 2;
-	private static final String USER_STR_ID_2 = "2";
 	private static final String USER_NAME_2 = "Teodor";
 
 	private static final int BOOK_ID_1 = 1;
@@ -41,7 +40,6 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	private static final String BOOK_AUTHOR_1 = "Herbert";
 
 	private static final int BOOK_ID_2 = 2;
-	private static final String BOOK_STR_ID_2 = "2";
 	private static final String BOOK_TITLE_2 = "Cujo";
 	private static final String BOOK_AUTHOR_2 = "King";
 

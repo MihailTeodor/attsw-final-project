@@ -1,8 +1,11 @@
 package com.gurzumihail.library.view.swing;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.mockito.AdditionalAnswers.answer;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
@@ -13,38 +16,29 @@ import org.assertj.swing.junit.runner.GUITestRunner;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testcontainers.containers.MongoDBContainer;
 
 import com.gurzumihail.library.controller.LibraryController;
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
-import com.gurzumihail.library.repository.mongo.BookRepositoryMongo;
-import com.gurzumihail.library.repository.mongo.UserRepositoryMongo;
-import com.gurzumihail.library.transaction_manager.mongo.TransactionManagerMongo;
-import com.gurzumihail.library.view.LibraryView;
-import com.mongodb.MongoClient;
-import com.mongodb.ServerAddress;
-import com.mongodb.client.ClientSession;
-import com.mongodb.client.MongoDatabase;
+import com.gurzumihail.library.repository.BookRepository;
+import com.gurzumihail.library.repository.RepositoryException;
+import com.gurzumihail.library.repository.UserRepository;
+import com.gurzumihail.library.transaction_code.TransactionCode;
+import com.gurzumihail.library.transaction_manager.TransactionManager;
 
 @RunWith(GUITestRunner.class)
 public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
-
-	private static final String LIBRARY_DB_NAME = "library";
-	private static final String USER_COLLECTION_NAME = "user";
-	private static final String BOOK_COLLECTION_NAME = "book";
 
 	private static final int USER_ID_1 = 1;
 	private static final String USER_STR_ID_1 = "1";
 	private static final String USER_NAME_1 = "Mihail";
 
 	private static final int USER_ID_2 = 2;
-	private static final String USER_STR_ID_2 = "2";
 	private static final String USER_NAME_2 = "Teodor";
 
 	private static final int BOOK_ID_1 = 1;
@@ -53,39 +47,34 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	private static final String BOOK_AUTHOR_1 = "Herbert";
 
 	private static final int BOOK_ID_2 = 2;
-	private static final String BOOK_STR_ID_2 = "2";
 	private static final String BOOK_TITLE_2 = "Cujo";
 	private static final String BOOK_AUTHOR_2 = "King";
 	
 	
-	@ClassRule
-	public static final MongoDBContainer mongo = 
-		new MongoDBContainer("mongo:4.4.3");
+	private AutoCloseable closeable;
+
+	@Mock
+	private UserRepository userRepository;
 	
-	private MongoClient client;
-	private UserRepositoryMongo userRepository;
-	private BookRepositoryMongo bookRepository;
-	private ClientSession session;
-	private TransactionManagerMongo transactionManager;
+	@Mock
+	private BookRepository bookRepository;
+	
+	@Mock
+	private TransactionManager transactionManager;
+	
+	@InjectMocks
 	private LibraryController libController;
+	
 	private FrameFixture window;
 	private LibraryViewSwing libView;
 	
 	
-	@SuppressWarnings("deprecation")
 	@Before
-	public void onSetUp() {
-		client = new MongoClient(
-				new ServerAddress(
-						mongo.getContainerIpAddress(),
-						mongo.getMappedPort(27017)));
-		session = client.startSession();
-		MongoDatabase database = client.getDatabase(LIBRARY_DB_NAME);
-		userRepository = new UserRepositoryMongo(client, LIBRARY_DB_NAME, USER_COLLECTION_NAME, session);
-		bookRepository = new BookRepositoryMongo(client, LIBRARY_DB_NAME, BOOK_COLLECTION_NAME, session);
-		transactionManager = new TransactionManagerMongo(userRepository, bookRepository, session);
-
-		database.drop();
+	public void onSetUp() throws RepositoryException {
+		closeable = MockitoAnnotations.openMocks(this);
+	
+		when(transactionManager.doInTransaction(any()))
+		 	.thenAnswer(answer((TransactionCode<?> code) -> code.apply(userRepository, bookRepository)));
 		
 		GuiActionRunner.execute(() ->{
 			libView = new LibraryViewSwing();
@@ -98,20 +87,18 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	}
 	
 	@After
-	public void shutDownServer() {
-		client.close();
-		session.close();
+	public void releaseMocks() throws Exception {
+		closeable.close();
 	}
 	
 
 	@Test
 	@GUITest
-	public void testAllUsers() {
+	public void testAllUsers() throws RepositoryException {
 		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
-		userRepository.save(user1);
-		userRepository.save(user2);
-		
+		when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
+	
 		GuiActionRunner.execute(() -> libController.allUsers());
 		
 		assertThat(window.list("usersList").contents())
@@ -120,11 +107,10 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAllBooks() {
+	public void testAllBooks() throws RepositoryException {
 		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
-		bookRepository.save(book1);
-		bookRepository.save(book2);
+		when(bookRepository.findAll()).thenReturn(Arrays.asList(book1, book2));
 		
 		GuiActionRunner.execute(() -> libController.allBooks());
 		
@@ -133,9 +119,10 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAddUserButtonSuccess() {
+	public void testAddUserButtonSuccess() throws RepositoryException {
 		window.textBox("idUserTextField").enterText(USER_STR_ID_1);
 		window.textBox("nameUserTextField").enterText(USER_NAME_1);
+		when(userRepository.findById(USER_ID_1)).thenReturn(null);
 
 		window.button("addUserButton").click();
 		
@@ -144,11 +131,11 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAddBookButtonSuccess() {
+	public void testAddBookButtonSuccess() throws RepositoryException {
 		window.textBox("idBookTextField").enterText(BOOK_STR_ID_1);
 		window.textBox("titleBookTextField").enterText(BOOK_TITLE_1);
 		window.textBox("authorBookTextField").enterText(BOOK_AUTHOR_1);
-
+		when(bookRepository.findById(BOOK_ID_1)).thenReturn(null);
 		window.button("addBookButton").click();
 		
 		assertThat(window.list("booksList").contents()).containsExactly(new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1).toString());
@@ -156,11 +143,11 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAddUserButtonError() {
+	public void testAddUserButtonError() throws RepositoryException {
 		User existingUser = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
-		userRepository.save(existingUser);
 		window.textBox("idUserTextField").enterText(USER_STR_ID_1);
 		window.textBox("nameUserTextField").enterText(USER_NAME_1);
+		when(userRepository.findById(USER_ID_1)).thenReturn(existingUser);
 
 		window.button("addUserButton").click();
 		
@@ -170,12 +157,12 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAddBookButtonError() {
+	public void testAddBookButtonError() throws RepositoryException {
 		Book existingBook = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
-		bookRepository.save(existingBook);
 		window.textBox("idBookTextField").enterText(BOOK_STR_ID_1);
 		window.textBox("titleBookTextField").enterText(BOOK_TITLE_1);
 		window.textBox("authorBookTextField").enterText(BOOK_AUTHOR_1);
+		when(bookRepository.findById(BOOK_ID_1)).thenReturn(existingBook);
 
 		window.button("addBookButton").click();
 		
@@ -185,11 +172,12 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testDeleteUserButtonSuccess() {
+	public void testDeleteUserButtonSuccess() throws RepositoryException {
 		User userToDelete = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		GuiActionRunner.execute(
 				() -> libController.addUser(userToDelete));
-		
+		when(userRepository.findById(USER_ID_1)).thenReturn(userToDelete);
+	
 		window.list("usersList").selectItem(0);
 		window.button("userDeleteButton").click();
 		
@@ -198,11 +186,12 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testDeleteBookButtonSuccess() {
+	public void testDeleteBookButtonSuccess() throws RepositoryException {
 		Book bookToDelete = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		GuiActionRunner.execute(
 				() -> libController.addBook(bookToDelete));
-	
+		when(bookRepository.findById(BOOK_ID_1)).thenReturn(bookToDelete);
+		
 		window.list("booksList").selectItem(0);
 		window.button("deleteBookButton").click();
 		
@@ -211,11 +200,12 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testUserDeleteButtonError() {
+	public void testUserDeleteButtonError() throws RepositoryException {
 		User userToDelete = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		GuiActionRunner.execute(
 				() -> libView.getUserModelList().addElement(userToDelete));
-	
+		when(userRepository.findById(USER_ID_1)).thenReturn(null);	
+		
 		window.list("usersList").selectItem(0);
 		window.button("userDeleteButton").click();
 		
@@ -226,11 +216,12 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testDeleteBookButtonError() {
+	public void testDeleteBookButtonError() throws RepositoryException {
 		Book bookToDelete = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		GuiActionRunner.execute(
 				() -> libView.getBookModelList().addElement(bookToDelete));
-
+		when(bookRepository.findById(BOOK_ID_1)).thenReturn(null);
+		
 		window.list("booksList").selectItem(0);
 		window.button("deleteBookButton").click();
 		
@@ -241,7 +232,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testBorrowBookButtonSuccess() {
+	public void testBorrowBookButtonSuccess() throws RepositoryException {
 		User user = new User(USER_ID_1, USER_NAME_1, new HashSet<>());
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		GuiActionRunner.execute(() -> {
@@ -249,6 +240,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 			libController.addBook(book);
 		});
 		
+		when(bookRepository.findById(BOOK_ID_1)).thenReturn(book);
 		window.list("usersList").selectItem(0);
 		window.list("booksList").selectItem(0);
 		window.button("borrowBookButton").click();
@@ -259,7 +251,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testBorrowBookButtonError() {
+	public void testBorrowBookButtonError() throws RepositoryException {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.singleton(book));
 		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
@@ -271,6 +263,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 			libController.addUser(user2);
 			libController.addBook(book);
 		});
+		when(bookRepository.findById(BOOK_ID_1)).thenReturn(book);
 		
 		window.list("usersList").selectItem(1);
 		window.list("booksList").selectItem(0);
@@ -283,7 +276,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testReturnBook() {
+	public void testReturnBook() throws RepositoryException {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		User user = new User(USER_ID_1, USER_NAME_1, Collections.singleton(book));
 		book.setAvailable(false);
@@ -293,6 +286,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 			libController.addUser(user);
 			libController.addBook(book);
 		});
+		when(userRepository.getRentedBooks(USER_ID_1)).thenReturn(Arrays.asList(book));
 		
 		window.list("usersList").selectItem(0);
 		window.list("borrowedBooksList").selectItem(0);
