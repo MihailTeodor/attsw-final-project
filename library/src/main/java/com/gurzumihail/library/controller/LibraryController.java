@@ -179,12 +179,12 @@ public class LibraryController {
 	public void returnBook(User user, Book book) {
 		try {
 			transactionManager.doInTransaction((userRepository, bookRepository) -> {
+				libView.bookReturned(book);
 				user.getRentedBooks().remove(book);
 				userRepository.update(user);
 				book.setAvailable(true);
 				book.setUserID(-1);
 				bookRepository.update(book);
-				libView.bookReturned(book);
 				LOGGER.info("book returned");
 				return null;
 			});

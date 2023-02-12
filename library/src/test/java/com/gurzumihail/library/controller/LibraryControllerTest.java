@@ -398,12 +398,12 @@ public class LibraryControllerTest {
 
 		InOrder inOrder = inOrder(transactionManager, userRepository, book, bookRepository, libView);
 		inOrder.verify(transactionManager).doInTransaction(any());
+		inOrder.verify(libView).bookReturned(book);
 		assertThat(user.getRentedBooks()).containsExactly(bookToNotReturn);
 		inOrder.verify(userRepository).update(user);
 		inOrder.verify(book).setAvailable(true);
 		inOrder.verify(book).setUserID(DEFAULT_USER_ID);
 		inOrder.verify(bookRepository).update(book);
-		inOrder.verify(libView).bookReturned(book);
 	}
 
 	@Test

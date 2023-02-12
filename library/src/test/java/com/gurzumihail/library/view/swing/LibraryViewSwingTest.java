@@ -243,10 +243,12 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	public void testShowUsersShouldAddUserDescriptionsToTheList() {
 		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
+	
 		GuiActionRunner.execute(
 				() -> libraryView.showUsers(Arrays.asList(user1, user2))
 		);
 		String[] listContents = window.list("usersList").contents();
+	
 		assertThat(listContents).containsExactly(user1.toString(), user2.toString());
 	}
 	
@@ -255,10 +257,12 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	public void testShowBooksShouldAddBookDescriptionsToTheList() {
 		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
+	
 		GuiActionRunner.execute(
 				() -> libraryView.showBooks(Arrays.asList(book1, book2))
 		);
 		String[] listContents = window.list("booksList").contents();
+		
 		assertThat(listContents).containsExactly(book1.toString(), book2.toString());
 	}	
 	
@@ -267,10 +271,12 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	public void testShowBorrowedBooksShouldAddBookDescriptionsToTheList() {
 		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
+	
 		GuiActionRunner.execute(
 				() -> libraryView.showBorrowedBooks(Arrays.asList(book1, book2))
 		);
 		String[] listContents = window.list("borrowedBooksList").contents();
+		
 		assertThat(listContents).containsExactly(book1.toString(), book2.toString());
 	}	
 
@@ -281,37 +287,66 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 		GuiActionRunner.execute(
 				() -> libraryView.showError("error message")
 		);
+		
 		window.label("errorMessageLabel").requireText("error message");
 	}
 	
 	
 	@Test
 	@GUITest
-	public void testUserAddedShouldAddTheUserToTheListAndResetTheErrorLabel() {
+	public void testUserAddedShouldAddTheUserToTheList() {
 		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
+		
 		GuiActionRunner.execute(
 				() -> libraryView.userAdded(user)
 		);
 		String[] listContents = window.list("usersList").contents();
+		
 		assertThat(listContents).containsExactly(user.toString());
+	}
+	
+	@Test
+	@GUITest
+	public void testUserAddedShouldResetTheErrorLabel() {
+		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
+
+		GuiActionRunner.execute(() -> {
+			libraryView.showError("Some error occoured!");
+			libraryView.userAdded(user);
+		});
+		
 		window.label("errorMessageLabel").requireText(" ");
 	}
 	
 	@Test
 	@GUITest
-	public void testBookAddedShouldAddTheBookToTheListAndResetTheErrorLabel() {
+	public void testBookAddedShouldAddTheBookToTheList() {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+	
 		GuiActionRunner.execute(
 				() -> libraryView.bookAdded(book)
 		);
 		String[] listContents = window.list("booksList").contents();
+		
 		assertThat(listContents).containsExactly(book.toString());
-		window.label("errorMessageLabel").requireText(" ");
 	}
-	
+
 	@Test
 	@GUITest
-	public void testUserRemovedShouldRemoveTheUserFromTheListAndResetTheErrorLabel () {
+	public void testBookAddedShouldResetTheErrorLabel() {
+		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+
+		GuiActionRunner.execute(() -> {
+			libraryView.showError("Some error occoured!");
+			libraryView.bookAdded(book);
+		});
+		
+		window.label("errorMessageLabel").requireText(" ");
+	}
+
+	@Test
+	@GUITest
+	public void testUserDeletedShouldRemoveTheUserFromTheList() {
 		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
 		GuiActionRunner.execute(() -> {
@@ -324,13 +359,26 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 				() -> libraryView.userDeleted(new User(USER_ID_1, USER_NAME_1, Collections.emptySet())));
 		
 		String[] listContents = window.list("usersList").contents();
+	
 		assertThat(listContents).containsExactly(user2.toString());
+	}
+
+	@Test
+	@GUITest
+	public void testUserDeletedShouldResetTheErrorLabel() {
+		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
+		
+		GuiActionRunner.execute(() -> {
+			libraryView.showError("Some error occoured!");
+			libraryView.userDeleted(user);
+		});
+		
 		window.label("errorMessageLabel").requireText(" ");
 	}
 
 	@Test
 	@GUITest
-	public void testBookRemovedShouldRemoveTheBookFromTheListAndResetTheErrorLabel () {
+	public void testBookDeletedShouldRemoveTheBookFromTheList() {
 		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		GuiActionRunner.execute(() -> {
@@ -341,12 +389,81 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 		
 		GuiActionRunner.execute(
 				() -> libraryView.bookDeleted(new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1)));
-		
 		String[] listContents = window.list("booksList").contents();
+	
 		assertThat(listContents).containsExactly(book2.toString());
+	}
+	
+	@Test
+	@GUITest
+	public void testBookDeletedShouldResetTheErrorLabel() {
+		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+	
+		GuiActionRunner.execute(() -> {
+			libraryView.showError("Some error occoured!");
+			libraryView.bookDeleted(book);
+		});
+	
 		window.label("errorMessageLabel").requireText(" ");
 	}
 	
+	@Test
+	@GUITest
+	public void testBookBorrowedShouldAddTheBookToTheBorroewedBooksList() {
+		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+		
+		GuiActionRunner.execute(
+				() -> libraryView.bookBorrowed(book)
+		);
+		String[] listContents = window.list("borrowedBooksList").contents();
+		
+		assertThat(listContents).containsExactly(book.toString());
+	}
+
+	@Test
+	@GUITest
+	public void testBookBorrowedShouldResetTheErrorLabel() {
+		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+	
+		GuiActionRunner.execute(() -> {
+			libraryView.showError("Some error occoured!");
+			libraryView.bookBorrowed(book);
+		});
+	
+		window.label("errorMessageLabel").requireText(" ");
+	}
+
+	@Test
+	@GUITest
+	public void testBookReturnedShouldRemoveTheBookFromBorrowedBooksList() {
+		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
+		GuiActionRunner.execute(() -> {
+			DefaultListModel<Book> borrowedBooksModelList = libraryView.getBorrowedBooksModelList();
+			borrowedBooksModelList.addElement(book1);
+			borrowedBooksModelList.addElement(book2);
+		});
+		
+		GuiActionRunner.execute(
+				() -> libraryView.bookReturned(new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1)));
+		String[] listContents = window.list("borrowedBooksList").contents();
+	
+		assertThat(listContents).containsExactly(book2.toString());
+	}
+
+	@Test
+	@GUITest
+	public void testBookReturnedShouldResetTheErrorLabel() {
+		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+	
+		GuiActionRunner.execute(() -> {
+			libraryView.showError("Some error occoured!");
+			libraryView.bookReturned(book);
+		});
+	
+		window.label("errorMessageLabel").requireText(" ");
+	}
+
 	@Test
 	@GUITest
 	public void testUserUpdatedThrowsException() {
@@ -361,20 +478,6 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 		assertThatThrownBy(() -> libraryView.bookUpdated(book)).isInstanceOf(UnsupportedOperationException.class).hasMessage("Unsupported operation!");
 	}
 	
-	@Test
-	@GUITest
-	public void testBookBorrowedThrowsException() {
-		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
-		assertThatThrownBy(() -> libraryView.bookBorrowed(book)).isInstanceOf(UnsupportedOperationException.class).hasMessage("Unsupported operation!");
-	}
-	
-	@Test
-	@GUITest
-	public void testBookReturnedThrowsException() {
-		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
-		assertThatThrownBy(() -> libraryView.bookReturned(book)).isInstanceOf(UnsupportedOperationException.class).hasMessage("Unsupported operation!");
-	}
-
 	@Test
 	@GUITest
 	public void testAddUserButtonShouldDelegateToLibraryControllerAddUser() {
@@ -403,6 +506,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	public void testUserDeleteButtonShouldDelegateToLibraryControllerDeleteUser() {
 		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
+	
 		GuiActionRunner.execute(() -> {
 			DefaultListModel<User> userModelList = libraryView.getUserModelList();
 			userModelList.addElement(user1);
@@ -410,6 +514,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 		});
 		window.list("usersList").selectItem(1);
 		window.button("userDeleteButton").click();
+		
 		verify(libController).deleteUser(user2);
 	}
 
@@ -418,13 +523,13 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	public void testDeleteBookButtonShouldDelegateToLibraryControllerDeleteBook() {
 		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
+	
 		GuiActionRunner.execute(() -> {
 			DefaultListModel<Book> bookModelList = libraryView.getBookModelList();
 			bookModelList.addElement(book1);
 			bookModelList.addElement(book2);
 		});
 		window.list("booksList").selectItem(1);
-	
 		window.button("deleteBookButton").click();
 	
 		verify(libController).deleteBook(book2);
@@ -435,6 +540,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	public void testBorrowBookButtonShouldDelegateToLibraryControllerBorrowBook() {
 		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+	
 		GuiActionRunner.execute(() -> {
 			DefaultListModel<User> userModelList = libraryView.getUserModelList();
 			DefaultListModel<Book> bookModelList = libraryView.getBookModelList();
@@ -443,7 +549,6 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 		});
 		window.list("usersList").selectItem(0);
 		window.list("booksList").selectItem(0);
-		
 		window.button("borrowBookButton").click();
 		
 		verify(libController).borrowBook(user, book);
@@ -455,6 +560,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	public void testReturnBorrowedBookButtonShouldDelegateToLabraryControllerReturnBook() {
 		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
+	
 		GuiActionRunner.execute(() -> {
 			DefaultListModel<User> userModelList = libraryView.getUserModelList();
 			DefaultListModel<Book> borrowedBooksModelList = libraryView.getBorrowedBooksModelList();
@@ -463,11 +569,9 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 		});
 		window.list("usersList").selectItem(0);
 		window.list("borrowedBooksList").selectItem(0);
-		
 		window.button("returnBorrowedBookButton").click();
 		
 		verify(libController).returnBook(user, book);
-		
 	}
 	
 	@Test
@@ -475,6 +579,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	public void testWhenUserSelectedShouldDelegateToLibraryControllerAllBorrowedBooks() {
 		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
+	
 		GuiActionRunner.execute(() -> {
 			DefaultListModel<User> userModelList = libraryView.getUserModelList();
 			userModelList.addElement(user1);

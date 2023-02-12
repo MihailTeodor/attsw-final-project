@@ -504,12 +504,14 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 
 	@Override
 	public void bookBorrowed(Book book) {
-		throw new UnsupportedOperationException("Unsupported operation!");
+		borrowedBooksModelList.addElement(book);
+		resetErrorLabel();
 	}
 
 	@Override
 	public void bookReturned(Book book) {
-		throw new UnsupportedOperationException("Unsupported operation!");
+		borrowedBooksModelList.removeElement(book);
+		resetErrorLabel();
 	}
 
 	@Override
