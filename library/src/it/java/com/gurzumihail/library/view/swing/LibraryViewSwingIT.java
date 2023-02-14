@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.assertj.swing.annotation.GUITest;
 import org.assertj.swing.edt.GuiActionRunner;
@@ -103,6 +104,8 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 		
 		assertThat(window.list("usersList").contents())
 			.containsExactly(user1.toString(), user2.toString());
+		
+		window.label("errorMessageLabel").requireText(" ");
 	}
 	
 	@Test
@@ -115,6 +118,8 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 		GuiActionRunner.execute(() -> libController.allBooks());
 		
 		assertThat(window.list("booksList").contents()).containsExactly(book1.toString(), book2.toString());
+
+		window.label("errorMessageLabel").requireText(" ");
 	}
 	
 	@Test
@@ -127,6 +132,8 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 		window.button("addUserButton").click();
 		
 		assertThat(window.list("usersList").contents()).containsExactly(new User(USER_ID_1, USER_NAME_1, Collections.emptySet()).toString());
+	
+		window.label("errorMessageLabel").requireText(" ");
 	}
 	
 	@Test
@@ -139,6 +146,8 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 		window.button("addBookButton").click();
 		
 		assertThat(window.list("booksList").contents()).containsExactly(new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1).toString());
+	
+		window.label("errorMessageLabel").requireText(" ");
 	}
 	
 	@Test
@@ -182,6 +191,8 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 		window.button("userDeleteButton").click();
 		
 		assertThat(window.list("usersList").contents()).isEmpty();
+
+		window.label("errorMessageLabel").requireText(" ");
 	}
 	
 	@Test
@@ -196,6 +207,8 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 		window.button("deleteBookButton").click();
 		
 		assertThat(window.list("booksList").contents()).isEmpty();
+
+		window.label("errorMessageLabel").requireText(" ");
 	}
 
 	@Test
@@ -246,6 +259,8 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 		window.button("borrowBookButton").click();
 		
 		assertThat(window.list("borrowedBooksList").contents()).containsExactly(book.toString());
+
+		window.label("errorMessageLabel").requireText(" ");
 	}
 	
 	
@@ -278,7 +293,9 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	@GUITest
 	public void testReturnBook() throws RepositoryException {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
-		User user = new User(USER_ID_1, USER_NAME_1, Collections.singleton(book));
+		Set<Book> borrowedBooks = new HashSet<>();
+		borrowedBooks.add(book);
+		User user = new User(USER_ID_1, USER_NAME_1, borrowedBooks);
 		book.setAvailable(false);
 		book.setUserID(USER_ID_1);
 		
@@ -293,5 +310,6 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 		window.button("returnBorrowedBookButton").click();
 		
 		assertThat(window.list("borrowedBooksList").contents()).isEmpty();
+		window.label("errorMessageLabel").requireText(" ");
 	}	
 }

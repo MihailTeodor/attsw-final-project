@@ -22,6 +22,8 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.GridBagLayout;
@@ -341,7 +343,7 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 					borrowBookButton.setEnabled(
 							(usersList.getSelectedIndex() != -1) &&
 							(booksList.getSelectedIndex() != -1));
-					if(!e.getValueIsAdjusting())
+					if(!e.getValueIsAdjusting() && usersList.getSelectedIndex() != -1)
 						libController.allBorrowedBooks(usersList.getSelectedValue());
 				});
 		
@@ -455,23 +457,31 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 
 	@Override
 	public void showUsers(List<User> users) {
-		users.stream().forEach(usersModelList::addElement);
+		SwingUtilities.invokeLater(() -> {
+			users.stream().forEach(usersModelList::addElement);
+		});
 	}
 
 	@Override
 	public void showBooks(List<Book> books) {
-		books.stream().forEach(booksModelList::addElement);		
+		SwingUtilities.invokeLater(() -> {
+			books.stream().forEach(booksModelList::addElement);		
+		});
 	}
 
 	@Override
 	public void showBorrowedBooks(List<Book> borrowedBooks) {
-		borrowedBooks.stream().forEach(borrowedBooksModelList::addElement);		
+		SwingUtilities.invokeLater(() -> {
+			borrowedBooks.stream().forEach(borrowedBooksModelList::addElement);		
+		});
 	}
 
 	@Override
 	public void userAdded(User user) {
-		usersModelList.addElement(user);
-		resetErrorLabel();
+		SwingUtilities.invokeLater(() -> {
+			usersModelList.addElement(user);
+			resetErrorLabel();
+		});
 	}
 
 	@Override
@@ -481,14 +491,18 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 
 	@Override
 	public void userDeleted(User user) {
-		usersModelList.removeElement(user);
-		resetErrorLabel();
+		SwingUtilities.invokeLater(() -> {
+			usersModelList.removeElement(user);
+			resetErrorLabel();
+		});
 	}
 
 	@Override
 	public void bookAdded(Book book) {
-		booksModelList.addElement(book);
-		resetErrorLabel();		
+		SwingUtilities.invokeLater(() -> {
+			booksModelList.addElement(book);
+			resetErrorLabel();		
+		});
 	}
 
 	@Override
@@ -498,25 +512,33 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 
 	@Override
 	public void bookDeleted(Book book) {
-		booksModelList.removeElement(book);
-		resetErrorLabel();
+		SwingUtilities.invokeLater(() -> {
+			booksModelList.removeElement(book);
+			resetErrorLabel();
+		});
 	}
 
 	@Override
 	public void bookBorrowed(Book book) {
-		borrowedBooksModelList.addElement(book);
-		resetErrorLabel();
+		SwingUtilities.invokeLater(() -> {
+			borrowedBooksModelList.addElement(book);
+			resetErrorLabel();
+		});
 	}
 
 	@Override
 	public void bookReturned(Book book) {
-		borrowedBooksModelList.removeElement(book);
-		resetErrorLabel();
+		SwingUtilities.invokeLater(() -> {
+			borrowedBooksModelList.removeElement(book);
+			resetErrorLabel();
+		});
 	}
 
 	@Override
 	public void showError(String message) {
-		errorMessageLabel.setText(message);
+		SwingUtilities.invokeLater(() -> {
+			errorMessageLabel.setText(message);
+		});
 	}
 
 	private void resetErrorLabel() {

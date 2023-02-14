@@ -43,7 +43,7 @@ public class LibraryControllerMongoIT {
 	
 	@ClassRule
 	public static final MongoDBContainer mongo = 
-		new MongoDBContainer("mongo:4.4.3");
+		new MongoDBContainer("mongo:6.0.3");
 	
 	@SuppressWarnings("unused")
 	private AutoCloseable closeable;
