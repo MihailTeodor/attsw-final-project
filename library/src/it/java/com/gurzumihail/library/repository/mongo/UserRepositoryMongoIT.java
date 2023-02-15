@@ -26,6 +26,7 @@ public class UserRepositoryMongoIT {
 	
 	private static final String LIBRARY_DB_NAME = "library";
 	private static final String USER_COLLECTION_NAME = "user";
+	private static final String BOOK_COLLECTION_NAME = "book";
 	
 	private static final int USER_ID_1 = 1;
 	private static final String USER_NAME_1 = "Mihail";
@@ -49,6 +50,7 @@ public class UserRepositoryMongoIT {
 	private MongoClient client;
 	private UserRepositoryMongo userRepository;
 	private MongoCollection<Document> userCollection;
+	private MongoCollection<Document> bookCollection;
 	private ClientSession session;
 	
 	@SuppressWarnings("deprecation")
@@ -63,6 +65,7 @@ public class UserRepositoryMongoIT {
 		MongoDatabase database = client.getDatabase(LIBRARY_DB_NAME);
 		database.drop();
 		userCollection = database.getCollection(USER_COLLECTION_NAME);
+		bookCollection = database.getCollection(BOOK_COLLECTION_NAME);
 	}
 	
 	@After
@@ -142,7 +145,32 @@ public class UserRepositoryMongoIT {
 		
 		assertThat(readAllUsersFromDatabase()).isEmpty();
 	}
+	
+	@Test 
+	public void testGetRentedBooksWhenUserDoesNotExist() {
+		assertThat(userRepository.getRentedBooks(1)).isEmpty();
+	}
+	
+	@Test
+	public void testGetRentedBooksWhenUserHasNoBooksRented() {
+		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
+		addTestUserToDatabase(user);
+		
+		assertThat(userRepository.getRentedBooks(1)).isEmpty();
+	}
 
+	@Test
+	public void testGetRentedBooksWhenUserHasBooksRented() {
+		Book rentedBook = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
+		rentedBook.setAvailable(false);
+		rentedBook.setUserID(USER_ID_2);
+		addTestBookToDatabase(rentedBook);
+		User user = new User(USER_ID_2, USER_NAME_2, Collections.singleton(rentedBook));
+		addTestUserToDatabase(user);
+		
+		assertThat(userRepository.getRentedBooks(USER_ID_2)).containsExactly(rentedBook);
+	}
+	
 	private Document fromBookToDocument(Book book) {
 		return new Document().append("id", book.getId()).append("title", book.getTitle())
 				.append("author", book.getAuthor()).append("available", book.isAvailable())
@@ -175,5 +203,15 @@ public class UserRepositoryMongoIT {
 				.stream(userCollection.find().spliterator(), false)
 				.map(this::fromDocumentToUser)
 				.collect(Collectors.toList());
+	}
+	
+	private void addTestBookToDatabase(Book book) {
+		bookCollection.insertOne(session,
+				new Document()
+					.append("id", book.getId())
+					.append("title", book.getTitle())
+					.append("author", book.getAuthor())
+					.append("available", book.isAvailable())
+					.append("userId", book.getUserID()));
 	}
 }

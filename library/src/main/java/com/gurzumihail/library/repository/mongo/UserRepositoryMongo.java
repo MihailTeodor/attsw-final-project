@@ -14,6 +14,7 @@ import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import java.util.Collections;
 
 public class UserRepositoryMongo implements UserRepository {
 	
@@ -59,6 +60,14 @@ public class UserRepositoryMongo implements UserRepository {
 		userCollection.deleteOne(session, Filters.eq("id", id));
 	}
 	
+	@Override
+	public List<Book> getRentedBooks(int id) {
+		Document d = userCollection.find(session, Filters.eq("id", id)).first();
+		if(d != null)
+			return d.getList("rentedBooks", Document.class).stream().map(this::fromDocumentToBook).collect(Collectors.toList());
+		return Collections.emptyList();
+	}
+
 	private Book fromDocumentToBook(Document d) {
 		Book book = new Book(d.getInteger("id"), d.getString("title"), d.getString("author"));
 		book.setAvailable(d.getBoolean("available")); 
@@ -83,5 +92,7 @@ public class UserRepositoryMongo implements UserRepository {
 				.append("rentedBooks", user.getRentedBooks().stream().map(this::fromBookToDocument)
 						.collect(Collectors.toList()));
 	}
+
+
 
 }
