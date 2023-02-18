@@ -23,12 +23,15 @@
 		<failsafe.version>3.0.0-M8</failsafe.version>
 		<mysql.connector.version>8.0.32</mysql.connector.version>
 		<log4j.version>2.19.0</log4j.version>
-
+		<picocli.version>4.7.1</picocli.version>
+		<docker.maven.version>0.41.0</docker.maven.version>
+		<docker.image.mongodb>candis/mongo-replica-set:0.0.2</docker.image.mongodb>
 		<!-- SONARCUBE-->
 		<sonar.coverage.exclusions>
 			**/library/App.java,
 			**/model/*,
 			**/library/view/swing/*,
+			**/library/app/swing/mongo/*,
 		</sonar.coverage.exclusions>
 
 	</properties>
@@ -108,6 +111,11 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli</artifactId>
+			<version>${picocli.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -130,6 +138,7 @@
 							<exclude>**/model/*.*</exclude>
 							<exclude>**/library/App.*</exclude>
 							<exclude>**/library/view/swing/*.*</exclude>
+							<exclude>**/library/app/swing/mongo/*.*</exclude>
 						</excludes>
 					</configuration>
 					<executions>
@@ -174,9 +183,11 @@
 							<param>com.gurzumihail.library.model.*</param>
 							<param>com.gurzumihail.library.App.*</param>
 							<param>com.gurzumihail.library.view.swing.*</param>
+							<param>com.gurzumihail.library.app.swing.mongo.*</param>
 						</excludedClasses>
 						<excludedTestClasses>
 							<param>com.gurzumihail.library.view.swing.*</param>
+							<param>com.gurzumihail.library.app.swing.mongo.*</param>
 						</excludedTestClasses>
 						<mutators>
 							<mutator>DEFAULTS</mutator>
@@ -189,6 +200,7 @@
 					<artifactId>sonar-maven-plugin</artifactId>
 					<version>3.9.1.2184</version>
 				</plugin>
+
 			</plugins>
 		</pluginManagement>
 
@@ -208,6 +220,7 @@
 						<configuration>
 							<sources>
 								<source>src/it/java</source>
+								<source>src/e2e/java</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -233,10 +246,81 @@
 				<version>${failsafe.version}</version>
 				<executions>
 					<execution>
+						<id>default-IT</id>
 						<goals>
 							<goal>integration-test</goal>
 							<goal>verify</goal>
 						</goals>
+					</execution>
+					<execution>
+						<id>e2e-tests</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<exclude>**/*IT.java</exclude>
+							</excludes>
+							<includes>
+								<include>**/*E2E.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>${docker.maven.version}</version>
+				<configuration>
+					<images>
+						<image>
+							<name>${docker.image.mongodb}</name>
+							<run>
+								<ports>
+									<port>27017:27017</port>
+								</ports>
+							</run>
+						</image>
+					</images>
+				</configuration>
+				<executions>
+					<execution>
+						<id>docker-start</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>start</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>docker-stop</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<archive>
+								<manifest>
+									<mainClass>com.gurzumihail.library.app.swing.mongo.LibrarySwingMongoApp</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
