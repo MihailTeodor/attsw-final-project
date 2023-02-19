@@ -7,7 +7,6 @@ import java.util.concurrent.Callable;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bson.Document;
 
 import com.gurzumihail.library.controller.LibraryController;
 import com.gurzumihail.library.repository.mongo.BookRepositoryMongo;
@@ -17,20 +16,12 @@ import com.gurzumihail.library.view.swing.LibraryViewSwing;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.ClientSession;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-/*
-
-docker run -d -p 27017:27017 -p 27018:27018 -p 27019:27019 candis/mongo-replica-set 
-
-docker run -p 27017:27017 --rm mongo:6.0.3 
-
-*/
 @Command(mixinStandardHelpOptions = true)
 public class LibrarySwingMongoApp implements Callable<Void> {
 	
@@ -52,10 +43,6 @@ public class LibrarySwingMongoApp implements Callable<Void> {
 	public static void main(String[] args) {
 		new CommandLine(new LibrarySwingMongoApp()).execute(args);
 	}
-//	private static final String LIBRARY_DB_NAME = "library";
-//	private static final String USER_COLLECTION_NAME = "user";
-//	private static final String BOOK_COLLECTION_NAME = "book";
-//	
 
 	private static final Logger LOGGER = LogManager.getLogger(LibraryViewSwing.class);
 
@@ -71,9 +58,6 @@ public class LibrarySwingMongoApp implements Callable<Void> {
 					database.createCollection(userCollectionName);
 				if(!existingCollections.contains(bookCollectionName))
 					database.createCollection(bookCollectionName);
-//				database.drop();
-//				MongoCollection<Document> userCollection = database.getCollection(userCollectionName);
-//				MongoCollection<Document> bookCollection = database.getCollection(bookCollectionName);
 				UserRepositoryMongo userRepoMongo = new UserRepositoryMongo(
 						client, databaseName, userCollectionName, session);
 				BookRepositoryMongo bookRepoMongo = new BookRepositoryMongo(

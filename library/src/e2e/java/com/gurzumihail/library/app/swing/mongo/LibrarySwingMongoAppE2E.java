@@ -25,6 +25,15 @@ import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.model.Filters;
 
+
+/*
+ * to be able to run these tests singularly:
+ * 
+ * docker run -d -p 27017:27017 -p 27018:27018 -p 27019:27019 --rm candis/mongo-replica-set 
+ * 
+ * and wait for the container to be up and running (30 to 60 sec) 	
+ */
+
 @RunWith(GUITestRunner.class)
 public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
 
