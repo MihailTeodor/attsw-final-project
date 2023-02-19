@@ -1,15 +1,11 @@
 package com.gurzumihail.library.view.swing;
 
-import java.awt.EventQueue;
 import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.gurzumihail.library.controller.LibraryController;
 import com.gurzumihail.library.model.Book;
@@ -34,8 +30,6 @@ import java.awt.Dimension;
 public class LibraryViewSwing extends JFrame implements LibraryView{
 
 	private static final long serialVersionUID = 7607615145913897146L;
-
-	private static final Logger LOGGER = LogManager.getLogger(LibraryViewSwing.class);
 
 	private JPanel contentPane;
 	private JLabel idUserLabel;
@@ -327,7 +321,6 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		
 		usersModelList = new DefaultListModel<>();
 		usersList = new JList<>(usersModelList);
-//     	usersList.setPrototypeCellValue();
 
 		usersList.addListSelectionListener(
 				e -> {
