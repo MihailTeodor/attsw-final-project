@@ -1,4 +1,4 @@
-package com.gurzumihail.library.transaction_manager.mySql;
+package com.gurzumihail.library.transaction_manager.mysql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,8 +26,9 @@ import org.testcontainers.utility.DockerImageName;
 
 import com.gurzumihail.library.model.User;
 import com.gurzumihail.library.repository.RepositoryException;
-import com.gurzumihail.library.repository.MySql.BookRepositoryMySql;
-import com.gurzumihail.library.repository.MySql.UserRepositoryMySql;
+import com.gurzumihail.library.repository.mysql.BookRepositoryMySql;
+import com.gurzumihail.library.repository.mysql.UserRepositoryMySql;
+import com.gurzumihail.library.transaction_manager.mysql.TransactionManagerMySql;
 
 public class TransactionManagerMySqlIT {
 	

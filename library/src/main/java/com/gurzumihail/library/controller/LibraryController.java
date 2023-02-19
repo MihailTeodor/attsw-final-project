@@ -14,6 +14,8 @@ import com.gurzumihail.library.view.LibraryView;
 public class LibraryController {
 
 	private static final Logger LOGGER = LogManager.getLogger(LibraryController.class);
+	
+	private static final String EXCEPTION_MESSAGE = "an exception was thrown";
 
 	private LibraryView libView;
 		
@@ -33,7 +35,7 @@ public class LibraryController {
 			LOGGER.info("All users shown");
 		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());
-			LOGGER.info("an exception was thrown", e);
+			LOGGER.info(EXCEPTION_MESSAGE, e);
 		}
 	}
 	
@@ -45,7 +47,7 @@ public class LibraryController {
 			LOGGER.info("All books shown");
 		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());
-			LOGGER.info("an exception was thrown", e);
+			LOGGER.info(EXCEPTION_MESSAGE, e);
 		}
 	}
 	
@@ -57,7 +59,7 @@ public class LibraryController {
 			LOGGER.info("All user's borrowed books shown");
 		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());
-			LOGGER.info("an axception was thrown", e);
+			LOGGER.info(EXCEPTION_MESSAGE, e);
 		}
 	}
 	
@@ -77,7 +79,7 @@ public class LibraryController {
 			});
 		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());	
-			LOGGER.info("an exception was thrown", e);
+			LOGGER.info(EXCEPTION_MESSAGE, e);
 		}
 	}
 
@@ -97,7 +99,7 @@ public class LibraryController {
 			});
 		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());
-			LOGGER.info("an exception was thrown", e);
+			LOGGER.info(EXCEPTION_MESSAGE, e);
 		}
 	} 
 	
@@ -122,7 +124,7 @@ public class LibraryController {
 			});
 		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());
-			LOGGER.info("an exception was thrown", e);
+			LOGGER.info(EXCEPTION_MESSAGE, e);
 		}
 	}
 	 
@@ -148,7 +150,7 @@ public class LibraryController {
 			});
 		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());	
-			LOGGER.info("an exception was thrown", e);
+			LOGGER.info(EXCEPTION_MESSAGE, e);
 		}
 	}
 	
@@ -172,7 +174,7 @@ public class LibraryController {
 			});
 		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());	
-			LOGGER.info("an exception was thrown", e);
+			LOGGER.info(EXCEPTION_MESSAGE, e);
 		}
 	}
 	
@@ -190,7 +192,7 @@ public class LibraryController {
 			});
 		} catch (RepositoryException e) {
 			libView.showError(e.getMessage());	
-			LOGGER.info("an exception was thrown", e);
+			LOGGER.info(EXCEPTION_MESSAGE, e);
 		}
 	} 
 }

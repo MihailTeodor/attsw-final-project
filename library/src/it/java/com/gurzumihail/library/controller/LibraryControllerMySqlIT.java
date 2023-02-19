@@ -23,9 +23,9 @@ import org.testcontainers.utility.DockerImageName;
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
 import com.gurzumihail.library.repository.RepositoryException;
-import com.gurzumihail.library.repository.MySql.BookRepositoryMySql;
-import com.gurzumihail.library.repository.MySql.UserRepositoryMySql;
-import com.gurzumihail.library.transaction_manager.mySql.TransactionManagerMySql;
+import com.gurzumihail.library.repository.mysql.BookRepositoryMySql;
+import com.gurzumihail.library.repository.mysql.UserRepositoryMySql;
+import com.gurzumihail.library.transaction_manager.mysql.TransactionManagerMySql;
 import com.gurzumihail.library.view.LibraryView;
 
 public class LibraryControllerMySqlIT {

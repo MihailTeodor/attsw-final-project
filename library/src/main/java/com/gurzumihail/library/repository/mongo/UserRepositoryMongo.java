@@ -18,6 +18,7 @@ import java.util.Collections;
 
 public class UserRepositoryMongo implements UserRepository {
 	
+	
 	private MongoDatabase database;
 	private ClientSession session;
 	private MongoCollection<Document> userCollection;

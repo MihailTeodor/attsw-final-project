@@ -1,4 +1,4 @@
-package com.gurzumihail.library.view.swing.mySql;
+package com.gurzumihail.library.view.swing.mysql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,9 +24,9 @@ import com.gurzumihail.library.controller.LibraryController;
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
 import com.gurzumihail.library.repository.RepositoryException;
-import com.gurzumihail.library.repository.MySql.BookRepositoryMySql;
-import com.gurzumihail.library.repository.MySql.UserRepositoryMySql;
-import com.gurzumihail.library.transaction_manager.mySql.TransactionManagerMySql;
+import com.gurzumihail.library.repository.mysql.BookRepositoryMySql;
+import com.gurzumihail.library.repository.mysql.UserRepositoryMySql;
+import com.gurzumihail.library.transaction_manager.mysql.TransactionManagerMySql;
 import com.gurzumihail.library.view.swing.LibraryViewSwing;
 
 public class LibraryViewSwingMySqlIT extends AssertJSwingJUnitTestCase{

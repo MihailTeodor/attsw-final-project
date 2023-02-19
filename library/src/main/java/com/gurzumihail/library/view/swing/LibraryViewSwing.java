@@ -19,6 +19,7 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -41,12 +42,12 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 	private JScrollPane scrollPane;
 	private JLabel usersListLabel;
 	private JButton userDeleteButton;
-	private JScrollPane scrollPane_1;
+	private JScrollPane scrollPane1;
 	private JTextField idBookTextField;
 	private JTextField titleBookTextField;
 	private JTextField authorBookTextField;
 	private JButton addBookButton;
-	private JScrollPane scrollPane_2;
+	private JScrollPane scrollPane2;
 	private JLabel bookLabel;
 	private JLabel idBookLabel;
 	private JLabel titleBookLabel;
@@ -78,7 +79,7 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		return borrowedBooksModelList;
 	}
 	
-	private LibraryController libController;
+	private transient LibraryController libController;
 	private JLabel errorMessageLabel;
 	
 	public void setLibraryController(LibraryController controller) {
@@ -113,7 +114,7 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		};
 		
 		setTitle("Library View");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1240, 860);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -342,37 +343,37 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		userDeleteButton.addActionListener(
 				e -> libController.deleteUser(usersList.getSelectedValue()));
 		
-		scrollPane_1 = new JScrollPane();
-		scrollPane_1.setPreferredSize(new Dimension(250, 300));
-		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
-		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane_1.insets = new Insets(0, 0, 5, 5);
-		gbc_scrollPane_1.gridx = 3;
-		gbc_scrollPane_1.gridy = 6;
-		contentPane.add(scrollPane_1, gbc_scrollPane_1);
+		scrollPane1 = new JScrollPane();
+		scrollPane1.setPreferredSize(new Dimension(250, 300));
+		GridBagConstraints gbc_scrollPane1 = new GridBagConstraints();
+		gbc_scrollPane1.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane1.insets = new Insets(0, 0, 5, 5);
+		gbc_scrollPane1.gridx = 3;
+		gbc_scrollPane1.gridy = 6;
+		contentPane.add(scrollPane1, gbc_scrollPane1);
 		
 		borrowedBooksModelList = new DefaultListModel<>();
-		borrowedBooksList = new JList<Book>(borrowedBooksModelList);
+		borrowedBooksList = new JList<>(borrowedBooksModelList);
 		borrowedBooksList.addListSelectionListener(
-				e -> {
+				e -> 
 					returnBorrowedBookButton.setEnabled(
 							(usersList.getSelectedIndex() != -1) &&
-							(borrowedBooksList.getSelectedIndex() != -1));
-				});
+							(borrowedBooksList.getSelectedIndex() != -1))
+				);
 		borrowedBooksList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		scrollPane_1.setViewportView(borrowedBooksList);
+		scrollPane1.setViewportView(borrowedBooksList);
 		borrowedBooksList.setName("borrowedBooksList");
 		
-		scrollPane_2 = new JScrollPane();
-		scrollPane_2.setPreferredSize(new Dimension(250, 300));
-		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
-		gbc_scrollPane_2.anchor = GridBagConstraints.WEST;
-		gbc_scrollPane_2.fill = GridBagConstraints.VERTICAL;
-		gbc_scrollPane_2.insets = new Insets(0, 0, 5, 0);
-		gbc_scrollPane_2.gridwidth = 3;
-		gbc_scrollPane_2.gridx = 5;
-		gbc_scrollPane_2.gridy = 6;
-		contentPane.add(scrollPane_2, gbc_scrollPane_2);
+		scrollPane2 = new JScrollPane();
+		scrollPane2.setPreferredSize(new Dimension(250, 300));
+		GridBagConstraints gbc_scrollPane2 = new GridBagConstraints();
+		gbc_scrollPane2.anchor = GridBagConstraints.WEST;
+		gbc_scrollPane2.fill = GridBagConstraints.VERTICAL;
+		gbc_scrollPane2.insets = new Insets(0, 0, 5, 0);
+		gbc_scrollPane2.gridwidth = 3;
+		gbc_scrollPane2.gridx = 5;
+		gbc_scrollPane2.gridy = 6;
+		contentPane.add(scrollPane2, gbc_scrollPane2);
 		
 		booksModelList = new DefaultListModel<>();
 		booksList = new JList<>(booksModelList);
@@ -385,7 +386,7 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 				});
 		
 		booksList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		scrollPane_2.setViewportView(booksList);
+		scrollPane2.setViewportView(booksList);
 		booksList.setName("booksList");
 		GridBagConstraints gbc_userDeleteButton = new GridBagConstraints();
 		gbc_userDeleteButton.anchor = GridBagConstraints.NORTHWEST;
@@ -438,30 +439,30 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		gbc_errorMessageLabel.insets = new Insets(0, 0, 0, 5);
 		gbc_errorMessageLabel.gridx = 1;
 		gbc_errorMessageLabel.gridy = 9;
-		contentPane.add(errorMessageLabel, gbc_errorMessageLabel);;
+		contentPane.add(errorMessageLabel, gbc_errorMessageLabel);
 		
 		
 	}
 
 	@Override
 	public void showUsers(List<User> users) {
-		SwingUtilities.invokeLater(() -> {
-			users.stream().forEach(usersModelList::addElement);
-		});
+		SwingUtilities.invokeLater(() -> 
+			users.stream().forEach(usersModelList::addElement)
+		);
 	}
 
 	@Override
 	public void showBooks(List<Book> books) {
-		SwingUtilities.invokeLater(() -> {
-			books.stream().forEach(booksModelList::addElement);		
-		});
+		SwingUtilities.invokeLater(() -> 
+			books.stream().forEach(booksModelList::addElement)		
+		);
 	}
 
 	@Override
 	public void showBorrowedBooks(List<Book> borrowedBooks) {
-		SwingUtilities.invokeLater(() -> {
-			borrowedBooks.stream().forEach(borrowedBooksModelList::addElement);		
-		});
+		SwingUtilities.invokeLater(() -> 
+			borrowedBooks.stream().forEach(borrowedBooksModelList::addElement)		
+		);
 	}
 
 	@Override

@@ -44,7 +44,7 @@ public class LibrarySwingMongoApp implements Callable<Void> {
 		new CommandLine(new LibrarySwingMongoApp()).execute(args);
 	}
 
-	private static final Logger LOGGER = LogManager.getLogger(LibraryViewSwing.class);
+	private static final Logger LOGGER = LogManager.getLogger(LibrarySwingMongoApp.class);
 
 	@Override
 	public Void call() throws Exception {
