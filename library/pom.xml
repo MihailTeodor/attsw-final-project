@@ -59,6 +59,14 @@
 		<sonar.issue.ignore.multicriteria.e13.resourceKey>
         	**/UserRepositoryMongo.java
     	</sonar.issue.ignore.multicriteria.e13.resourceKey>
+
+		<!-- Disable rule for "Test classes should comply with a naming convention " -->
+		<sonar.issue.ignore.multicriteria.e13.ruleKey>
+        	java:S3577
+  		</sonar.issue.ignore.multicriteria.e13.ruleKey>
+		<sonar.issue.ignore.multicriteria.e13.resourceKey>
+        	**/LibrarySwingMongoAppE2E.java
+    	</sonar.issue.ignore.multicriteria.e13.resourceKey>
 		
 	</properties>
 
