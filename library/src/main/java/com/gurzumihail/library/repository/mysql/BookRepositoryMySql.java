@@ -1,4 +1,4 @@
-package com.gurzumihail.library.repository.MySql;
+package com.gurzumihail.library.repository.mysql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

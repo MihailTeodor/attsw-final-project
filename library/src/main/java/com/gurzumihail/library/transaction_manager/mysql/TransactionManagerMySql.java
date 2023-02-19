@@ -1,4 +1,4 @@
-package com.gurzumihail.library.transaction_manager.mySql;
+package com.gurzumihail.library.transaction_manager.mysql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -8,8 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.gurzumihail.library.repository.RepositoryException;
-import com.gurzumihail.library.repository.MySql.BookRepositoryMySql;
-import com.gurzumihail.library.repository.MySql.UserRepositoryMySql;
+import com.gurzumihail.library.repository.mysql.BookRepositoryMySql;
+import com.gurzumihail.library.repository.mysql.UserRepositoryMySql;
 import com.gurzumihail.library.transaction_code.TransactionCode;
 import com.gurzumihail.library.transaction_manager.TransactionManager;
 
