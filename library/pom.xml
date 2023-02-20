@@ -227,7 +227,7 @@
 						<excludedTestClasses>
 							<param>com.gurzumihail.library.view.swing.*</param>
 							<param>com.gurzumihail.library.app.swing.mongo.*</param>
-							<param>com.gurzumihial.library.app.swing.mysql.*</param>
+							<param>com.gurzumihail.library.app.swing.mysql.*</param>
 						</excludedTestClasses>
 						<mutators>
 							<mutator>DEFAULTS</mutator>
