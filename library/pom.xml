@@ -26,15 +26,17 @@
 		<picocli.version>4.7.1</picocli.version>
 		<docker.maven.version>0.41.0</docker.maven.version>
 		<docker.image.mongodb>candis/mongo-replica-set:0.0.2</docker.image.mongodb>
+		<docker.image.mysql>mysql/mysql-server:8.0.32</docker.image.mysql>
 		<!-- SONARCUBE-->
 		<sonar.coverage.exclusions>
 			**/library/App.java,
 			**/model/*,
 			**/library/view/swing/*,
 			**/library/app/swing/mongo/*,
+			**/library/app/swing/mysql/*,
 		</sonar.coverage.exclusions>
 
-		<sonar.issue.ignore.multicriteria>e11, e12, e13</sonar.issue.ignore.multicriteria>
+		<sonar.issue.ignore.multicriteria>e11, e12, e13, e14</sonar.issue.ignore.multicriteria>
 		<!-- Disable rule for "Tests should include assertions":
       SonarQube is not aware of AssertJ Swing -->
 		<sonar.issue.ignore.multicriteria.e11.ruleKey>
@@ -54,19 +56,19 @@
 
 		<!-- Disable rule for "String literals should not be duplicated " -->
 		<sonar.issue.ignore.multicriteria.e13.ruleKey>
-        	java:S117
+        	java:S1192
   		</sonar.issue.ignore.multicriteria.e13.ruleKey>
 		<sonar.issue.ignore.multicriteria.e13.resourceKey>
         	**/UserRepositoryMongo.java
     	</sonar.issue.ignore.multicriteria.e13.resourceKey>
 
 		<!-- Disable rule for "Test classes should comply with a naming convention " -->
-		<sonar.issue.ignore.multicriteria.e13.ruleKey>
+		<sonar.issue.ignore.multicriteria.e14.ruleKey>
         	java:S3577
-  		</sonar.issue.ignore.multicriteria.e13.ruleKey>
-		<sonar.issue.ignore.multicriteria.e13.resourceKey>
+  		</sonar.issue.ignore.multicriteria.e14.ruleKey>
+		<sonar.issue.ignore.multicriteria.e14.resourceKey>
         	**/LibrarySwingMongoAppE2E.java
-    	</sonar.issue.ignore.multicriteria.e13.resourceKey>
+    	</sonar.issue.ignore.multicriteria.e14.resourceKey>
 		
 	</properties>
 
@@ -174,6 +176,7 @@
 							<exclude>**/library/App.*</exclude>
 							<exclude>**/library/view/swing/*.*</exclude>
 							<exclude>**/library/app/swing/mongo/*.*</exclude>
+							<exclude>**/library/app/swing/mysql/*.*</exclude>
 						</excludes>
 					</configuration>
 					<executions>
@@ -219,10 +222,12 @@
 							<param>com.gurzumihail.library.App.*</param>
 							<param>com.gurzumihail.library.view.swing.*</param>
 							<param>com.gurzumihail.library.app.swing.mongo.*</param>
+							<param>com.gurzumihail.library.app.swing.mysql.*</param>
 						</excludedClasses>
 						<excludedTestClasses>
 							<param>com.gurzumihail.library.view.swing.*</param>
 							<param>com.gurzumihail.library.app.swing.mongo.*</param>
+							<param>com.gurzumihial.library.app.swing.mysql.*</param>
 						</excludedTestClasses>
 						<mutators>
 							<mutator>DEFAULTS</mutator>
@@ -316,6 +321,25 @@
 								<ports>
 									<port>27017:27017</port>
 								</ports>
+							</run>
+						</image>
+						<image>
+							<name>${docker.image.mysql}</name>
+							<run>
+								<ports>
+									<port>3306:3306</port>
+								</ports>
+								<env>
+									<MYSQL_DATABASE>library</MYSQL_DATABASE>	
+									<MYSQL_USER>root</MYSQL_USER>								
+									<MYSQL_ROOT_PASSWORD>password</MYSQL_ROOT_PASSWORD>
+								 	<MYSQL_ROOT_HOST>%</MYSQL_ROOT_HOST>
+								</env>
+								<volumes>
+									<bind>
+										<volume>src/it/resources/database:/docker-entrypoint-initdb.d</volume>
+									</bind>
+								</volumes>
 							</run>
 						</image>
 					</images>

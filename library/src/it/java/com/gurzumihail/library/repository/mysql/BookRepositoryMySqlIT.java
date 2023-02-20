@@ -191,8 +191,6 @@ public class BookRepositoryMySqlIT {
 	
 	private void addTestBookToDatabase(Book book) throws RepositoryException {
 		try {
-//			if(book.getUserID() != -1)
-//				addTestUserToDatabase(new User(book.getUserID(), "test", null));
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO book (id, title, author, available, userId) VALUES(?,?,?,?,?)");
 			statement.setInt(1, book.getId());
 			statement.setString(2, book.getTitle());

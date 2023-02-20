@@ -446,23 +446,26 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 
 	@Override
 	public void showUsers(List<User> users) {
-		SwingUtilities.invokeLater(() -> 
-			users.stream().forEach(usersModelList::addElement)
-		);
+		SwingUtilities.invokeLater(() -> {
+			usersModelList.clear();
+			users.stream().filter(a -> a.getId() != -1).forEach(usersModelList::addElement);
+		});
 	}
 
 	@Override
 	public void showBooks(List<Book> books) {
-		SwingUtilities.invokeLater(() -> 
-			books.stream().forEach(booksModelList::addElement)		
-		);
+		SwingUtilities.invokeLater(() -> {
+			booksModelList.clear();
+			books.stream().forEach(booksModelList::addElement);		
+		});
 	}
 
 	@Override
 	public void showBorrowedBooks(List<Book> borrowedBooks) {
-		SwingUtilities.invokeLater(() -> 
-			borrowedBooks.stream().forEach(borrowedBooksModelList::addElement)		
-		);
+		SwingUtilities.invokeLater(() -> {
+			borrowedBooksModelList.clear();
+			borrowedBooks.stream().forEach(borrowedBooksModelList::addElement);		
+		});
 	}
 
 	@Override
@@ -525,9 +528,9 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 
 	@Override
 	public void showError(String message) {
-		SwingUtilities.invokeLater(() -> {
-			errorMessageLabel.setText(message);
-		});
+		SwingUtilities.invokeLater(() -> 
+			errorMessageLabel.setText(message)
+		);
 	}
 
 	private void resetErrorLabel() {

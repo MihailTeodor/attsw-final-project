@@ -168,7 +168,7 @@ public class LibraryViewSwingMySqlIT extends AssertJSwingJUnitTestCase{
 			libController.allUsers();
 			libController.allBooks();
 		});
-		window.list("usersList").selectItem(1);
+		window.list("usersList").selectItem(0);
 		window.list("booksList").selectItem(0);
 
 		window.button("borrowBookButton").click();
@@ -201,7 +201,7 @@ public class LibraryViewSwingMySqlIT extends AssertJSwingJUnitTestCase{
 			libController.allBooks();
 		});
 		
-		window.list("usersList").selectItem(1);
+		window.list("usersList").selectItem(0);
 		window.list("borrowedBooksList").selectItem(0);
 		window.button("returnBorrowedBookButton").click();
 		
