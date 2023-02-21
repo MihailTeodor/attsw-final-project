@@ -67,7 +67,7 @@
         	java:S3577
   		</sonar.issue.ignore.multicriteria.e14.ruleKey>
 		<sonar.issue.ignore.multicriteria.e14.resourceKey>
-        	**/LibrarySwingMongoAppE2E.java,
+        	**/LibrarySwingMongoAppE2E.java
     	</sonar.issue.ignore.multicriteria.e14.resourceKey>
 		<sonar.issue.ignore.multicriteria.e14.resourceKey>
 		    **/LibrarySwingMySqlAppE2E.java

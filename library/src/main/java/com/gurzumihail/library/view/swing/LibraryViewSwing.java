@@ -204,7 +204,15 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		addBookButton.setName("addBookButton");
 		addBookButton.setEnabled(false);
 		addBookButton.addActionListener(
-				e -> libController.addBook(new Book(Integer.parseInt(idBookTextField.getText()), titleBookTextField.getText(), authorBookTextField.getText())));
+			e -> {
+				int id = -1;
+				try {
+					id = Integer.parseInt(idBookTextField.getText());
+					libController.addBook(new Book(id, titleBookTextField.getText(), authorBookTextField.getText()));			
+				}catch(Exception ex) {
+					showError("please insert an integer id!");
+				}
+			}); 
 		
 		nameUserTextField = new JTextField();
 		nameUserTextField.addKeyListener(btnAddUserEnabler);
@@ -231,7 +239,15 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		addUserButton.setName("addUserButton");
 		addUserButton.setEnabled(false);
 		addUserButton.addActionListener(
-				e -> libController.addUser(new User(Integer.parseInt(idUserTextField.getText()), nameUserTextField.getText(), new HashSet<>())));
+				e -> {
+					int id = -1;
+					try {
+						id = Integer.parseInt(idUserTextField.getText());
+						libController.addUser(new User(id, nameUserTextField.getText(), new HashSet<>()));
+					}catch(Exception ex) {
+						showError("please insert an integer id!");
+					}
+				}); 
 		
 		titleBookTextField = new JTextField();
 		titleBookTextField.addKeyListener(btnAddBookEnabler);

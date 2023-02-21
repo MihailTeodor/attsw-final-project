@@ -489,6 +489,17 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
+	public void testAddUserButtonShouldThrowExceptionIfInsertedIdIsNotInt() {
+		window.textBox("idUserTextField").enterText(USER_NAME_1);
+		window.textBox("nameUserTextField").enterText(USER_NAME_2);
+
+		window.button("addUserButton").click();
+		
+		window.label("errorMessageLabel").requireText("please insert an integer id!");
+	}
+
+	@Test
+	@GUITest
 	public void testAddBookButtonShouldDelegateToLibraryControllerAddBook() {
 		window.textBox("idBookTextField").enterText(BOOK_STR_ID_1);
 		window.textBox("titleBookTextField").enterText(BOOK_TITLE_1);
@@ -497,6 +508,18 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 		window.button("addBookButton").click();
 
 		verify(libController).addBook(new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));
+	}
+
+	@Test
+	@GUITest
+	public void testAddBookButtonShouldThrowExceptionIfInsertedIdIsNotInt() {
+		window.textBox("idBookTextField").enterText(BOOK_AUTHOR_1);
+		window.textBox("titleBookTextField").enterText(BOOK_TITLE_2);
+		window.textBox("authorBookTextField").enterText(BOOK_AUTHOR_2);
+
+		window.button("addBookButton").click();
+		
+		window.label("errorMessageLabel").requireText("please insert an integer id!");
 	}
 
 	@Test
