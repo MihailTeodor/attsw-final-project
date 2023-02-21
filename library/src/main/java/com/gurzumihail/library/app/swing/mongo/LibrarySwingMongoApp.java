@@ -25,6 +25,8 @@ import picocli.CommandLine.Option;
 @Command(mixinStandardHelpOptions = true)
 public class LibrarySwingMongoApp implements Callable<Void> {
 	
+	private static final Logger LOGGER = LogManager.getLogger(LibrarySwingMongoApp.class);
+	
 	@Option(names = { "--mongo-host" }, description = "MongoDB host address")
 	private String mongoHost = "localhost";
 	
@@ -43,8 +45,6 @@ public class LibrarySwingMongoApp implements Callable<Void> {
 	public static void main(String[] args) {
 		new CommandLine(new LibrarySwingMongoApp()).execute(args);
 	}
-
-	private static final Logger LOGGER = LogManager.getLogger(LibrarySwingMongoApp.class);
 
 	@Override
 	public Void call() throws Exception {

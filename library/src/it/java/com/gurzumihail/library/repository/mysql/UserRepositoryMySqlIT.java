@@ -48,6 +48,8 @@ public class UserRepositoryMySqlIT {
 	public static void setupBeforeClass() {
 		mySql = new MySQLContainer<>(DockerImageName.parse("mysql:8.0.32"))
 				.withDatabaseName("library")
+				.withUsername("root")
+				.withPassword("password")
 				.withInitScript("database/INIT.sql");
 
 		mySql.start();
@@ -231,14 +233,12 @@ public class UserRepositoryMySqlIT {
 		}
 	}
 
-
 	private User fromQueryResultToUser(ResultSet result) throws SQLException, RepositoryException{
 			int id = result.getInt("id");
 			String name = result.getString("name");
 			return new User(id, name, Collections.emptySet());
 	}
 	
-
 	private void addTestBookToDatabase(Book book) throws RepositoryException {
 		try {
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO book (id, title, author, available, userId) VALUES(?,?,?,?,?)");

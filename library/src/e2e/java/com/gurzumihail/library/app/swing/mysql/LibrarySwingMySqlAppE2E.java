@@ -1,13 +1,16 @@
-package com.gurzumihail.library.app.swing.mongo;
-
-import java.util.Collections;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.swing.JFrame;
+package com.gurzumihail.library.app.swing.mysql;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.swing.launcher.ApplicationLauncher.*;
+import static org.assertj.swing.launcher.ApplicationLauncher.application;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.regex.Pattern;
+
+import javax.swing.JFrame;
 
 import org.assertj.swing.annotation.GUITest;
 import org.assertj.swing.core.GenericTypeMatcher;
@@ -15,24 +18,30 @@ import org.assertj.swing.finder.WindowFinder;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.runner.GUITestRunner;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
-import org.bson.Document;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
-import com.mongodb.MongoClient;
-import com.mongodb.ServerAddress;
-import com.mongodb.client.model.Filters;
+import com.gurzumihail.library.repository.RepositoryException;
 
 @RunWith(GUITestRunner.class)
-public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
+public class LibrarySwingMySqlAppE2E extends AssertJSwingJUnitTestCase {
 
-	private static final String MONGO_HOST = "localhost";
-	private static final int MONGO_PORT = 27017;
+	private static final String MY_SQL_HOST = "localhost";
+	private static final int MY_SQL_PORT = 3306;
 	private static final String DATABASE_NAME = "library";
-	private static final String USER_COLLECTION_NAME = "user";
-	private static final String BOOK_COLLECTION_NAME = "book";
+	private static final String USERNAME = "root";
+	private static final String PASSWORD = "password";
+	
+	private static final String INSERT_USER = "INSERT INTO user (id, name) VALUES(?,?)";
+	private static final String INSERT_BOOK = "INSERT INTO book (id, title, author, available, userId) VALUES(?,?,?,?,?)";
+	private static final String DELETE_USER_BY_ID = "DELETE FROM user WHERE id=?";
+	private static final String DELETE_BOOK_BY_ID = "DELETE FROM book WHERE id=?";
+
+	
+	private static final int DEFAULT_USER_ID = -1;
+	private static final String DEFAULT_USER_NAME = "default-user";
 	
 	private static final int USER_FIXTURE_1_ID = 11;
 	private static final String USER_FIXTURE_1_STRING_ID = "11";
@@ -58,30 +67,33 @@ public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
 	private static final String BOOK_STR_ID_1 = "1";
 	private static final String BOOK_TITLE_1 = "Dune";
 	private static final String BOOK_AUTHOR_1 = "Herbert";
-	
-	private MongoClient mongoClient;
+
+
+	private Connection connection;
 	private FrameFixture window;
-	
+
 	@Override
 	protected void onSetUp() throws Exception {
-		 mongoClient = new MongoClient(new ServerAddress(MONGO_HOST, MONGO_PORT));
-		 mongoClient.getDatabase(DATABASE_NAME).drop();
-		 
-		 addTestUserToDatabase(new User(USER_FIXTURE_1_ID, USER_FIXTURE_1_NAME, Collections.emptySet()));
-		 addTestUserToDatabase(new User(USER_FIXTURE_2_ID, USER_FIXTURE_2_NAME, Collections.emptySet()));
-		 
-		 addTestBookToDatabase(new Book(BOOK_FIXTURE_1_ID, BOOK_FIXTURE_1_TITLE, BOOK_FIXTURE_1_AUTHOR));
-		 addTestBookToDatabase(new Book(BOOK_FIXTURE_2_ID, BOOK_FIXTURE_2_TITLE, BOOK_FIXTURE_2_AUTHOR));
+		String jdbcURL = String.format("jdbc:mysql://%s:%s/%s", MY_SQL_HOST, MY_SQL_PORT, DATABASE_NAME);
+		connection = DriverManager.getConnection(jdbcURL, USERNAME, PASSWORD);
 
-		 
-		 
-		 application("com.gurzumihail.library.app.swing.mongo.LibrarySwingMongoApp")
+		connection.prepareStatement("DELETE from book").executeUpdate();
+		connection.prepareStatement("DELETE from user").executeUpdate();
+	
+		addTestUserToDatabase(new User(DEFAULT_USER_ID, DEFAULT_USER_NAME, Collections.emptySet()));
+		addTestUserToDatabase(new User(USER_FIXTURE_1_ID, USER_FIXTURE_1_NAME, Collections.emptySet()));
+		addTestUserToDatabase(new User(USER_FIXTURE_2_ID, USER_FIXTURE_2_NAME, Collections.emptySet()));
+
+		addTestBookToDatabase(new Book(BOOK_FIXTURE_1_ID, BOOK_FIXTURE_1_TITLE, BOOK_FIXTURE_1_AUTHOR));
+		addTestBookToDatabase(new Book(BOOK_FIXTURE_2_ID, BOOK_FIXTURE_2_TITLE, BOOK_FIXTURE_2_AUTHOR));
+
+		 application("com.gurzumihail.library.app.swing.mysql.LibrarySwingMySqlApp")
 		 	.withArgs(
-		 			"--mongo-host=" + MONGO_HOST,
-		 			"--mongo-port=" + MONGO_PORT,
+		 			"--mysql-host=" + MY_SQL_HOST,
+		 			"--mysql-port=" + MY_SQL_PORT,
 		 			"--db-name=" + DATABASE_NAME,
-		 			"--db-user-collection=" + USER_COLLECTION_NAME,
-		 			"--db-book-collection=" + BOOK_COLLECTION_NAME
+		 			"--db-user=" + USERNAME,
+		 			"--db-password=" + PASSWORD
 		 	)
 		 	.start();
 
@@ -91,13 +103,16 @@ public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
 				 return "Library View".equals(frame.getTitle()) && frame.isShowing();
 			 }
 		}).using(robot());
+
 	}
 	
 	@Override
-	protected void onTearDown() {
-		mongoClient.getDatabase(DATABASE_NAME).drop();
-		mongoClient.close();
+	protected void onTearDown() throws SQLException {
+		connection.prepareStatement("DELETE from book").executeUpdate();
+		connection.prepareStatement("DELETE from user").executeUpdate();
+		connection.close();
 	}
+
 
 	@Test
 	@GUITest
@@ -221,7 +236,7 @@ public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testDeleteUserButtonWhenUserDoesNotExistError() {
+	public void testDeleteUserButtonWhenUserDoesNotExistError() throws RepositoryException {
 		window.list("usersList")
 		.selectItem(Pattern.compile(".*" + USER_FIXTURE_1_NAME + ".*"));
 		removeTestUserFromDatabase(USER_FIXTURE_1_ID);
@@ -232,6 +247,7 @@ public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
 			.contains("No existing user with id " + USER_FIXTURE_1_STRING_ID);
 	}
 	
+
 	@Test
 	@GUITest
 	public void testDeleteUserButtonWhenUserHasBorrowedBooksError() {
@@ -249,7 +265,7 @@ public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testDeleteBookButtonWhenBookDoesNotExistError() {
+	public void testDeleteBookButtonWhenBookDoesNotExistError() throws RepositoryException {
 		window.list("booksList")
 		.selectItem(Pattern.compile(".*" + BOOK_FIXTURE_1_TITLE + ".*"));
 		removeTestBookFromDatabase(BOOK_FIXTURE_1_ID);
@@ -259,6 +275,7 @@ public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
 		assertThat(window.label("errorMessageLabel").text())
 			.contains("No existing book with id " + BOOK_FIXTURE_1_STRING_ID);
 	}
+
 
 	@Test
 	@GUITest
@@ -275,45 +292,49 @@ public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
 			.contains("Cannot cancel this book! Book borrowed by user with id: " + USER_FIXTURE_1_STRING_ID);
 		
 	}
-	
-	
-	private void addTestUserToDatabase(User user) {
-		mongoClient
-			.getDatabase(DATABASE_NAME)
-			.getCollection(USER_COLLECTION_NAME)
-			.insertOne(fromUserToDocument(user));
+
+	private void addTestUserToDatabase(User user) throws RepositoryException {
+		try {
+			PreparedStatement statement = connection.prepareStatement(INSERT_USER);
+			statement.setInt(1,  user.getId());
+			statement.setString(2, user.getName());
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			throw new RepositoryException(e.getMessage(), e);
+		}
 	}
 	
-	private void addTestBookToDatabase(Book book) {
-		mongoClient.getDatabase(DATABASE_NAME)
-		.getCollection(BOOK_COLLECTION_NAME)
-		.insertOne(fromBookToDocument(book));
-	}
-	
-	private Document fromUserToDocument(User user) {
-		return new Document().append("id", user.getId()).append("name", user.getName())
-				.append("rentedBooks", user.getRentedBooks().stream().map(this::fromBookToDocument)
-						.collect(Collectors.toList()));
-	}
-	
-	private Document fromBookToDocument(Book book) {
-		return new Document().append("id", book.getId()).append("title", book.getTitle())
-				.append("author", book.getAuthor()).append("available", book.isAvailable())
-				.append("userId", book.getUserID());
+	private void addTestBookToDatabase(Book book) throws RepositoryException {
+		try {
+			PreparedStatement statement = connection.prepareStatement(INSERT_BOOK);
+			statement.setInt(1, book.getId());
+			statement.setString(2, book.getTitle());
+			statement.setString(3, book.getAuthor());
+			statement.setInt(4, book.isAvailable()? 1 : 0);
+			statement.setInt(5,	book.getUserID());
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			throw new RepositoryException(e.getMessage(), e);
+		}
 	}
 
-	private void removeTestUserFromDatabase(int id) {
-		mongoClient
-			.getDatabase(DATABASE_NAME)
-			.getCollection(USER_COLLECTION_NAME)
-			.deleteOne(Filters.eq("id", id));
+	private void removeTestUserFromDatabase(int id) throws RepositoryException {
+		try {
+			PreparedStatement statement = connection.prepareStatement(DELETE_USER_BY_ID);
+			statement.setInt(1,  id);
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			throw new RepositoryException(e.getMessage(), e);
+		}
 	}
 
-	private void removeTestBookFromDatabase(int id) {
-		mongoClient
-			.getDatabase(DATABASE_NAME)
-			.getCollection(BOOK_COLLECTION_NAME)
-			.deleteOne(Filters.eq("id", id));
+	private void removeTestBookFromDatabase(int id) throws RepositoryException {
+		try {
+			PreparedStatement statement = connection.prepareStatement(DELETE_BOOK_BY_ID);
+			statement.setInt(1,  id);
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			throw new RepositoryException(e.getMessage(), e);
+		}
 	}
-
 }

@@ -12,3 +12,5 @@ CREATE TABLE book
    userId INT,
    FOREIGN KEY (userId) REFERENCES user (id)
 );
+
+INSERT INTO user (id, name) VALUES(-1, "default-user");
