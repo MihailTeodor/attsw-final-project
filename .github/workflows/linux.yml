@@ -25,7 +25,7 @@ jobs:
         
     name: Build with Java ${{ matrix.java }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@main
       with:
         # shallow clones should be disabled for a better relevancy of SonarQube analysis
         fetch-depth: 0
@@ -34,7 +34,7 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
     - name: Cache Maven packages
-      uses: actions/cache@v2
+      uses: actions/cache@main
       with:
         path: |
           ~/m2
@@ -54,7 +54,7 @@ jobs:
       working-directory: ${{ env.workdir }}  
       if: ${{ always() }}  
     - name: Archive Reports
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@main
       if: ${{ failure() }}
       with:
         name: reports-jdk-${{ matrix.java }}
