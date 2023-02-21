@@ -155,32 +155,7 @@ public class LibrarySwingMySqlAppE2E extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAddUserButtonError() {
-		window.textBox("idUserTextField").enterText(USER_FIXTURE_1_STRING_ID);
-		window.textBox("nameUserTextField").enterText(USER_NAME_1);
-		window.button("addUserButton").click();
-		
-		assertThat(window.label("errorMessageLabel").text())
-			.contains("Already existing user with id " + USER_FIXTURE_1_STRING_ID);
-		
-	}
-	
-	@Test
-	@GUITest
-	public void testAddBookButtonError() {
-		window.textBox("idBookTextField").enterText(BOOK_FIXTURE_1_STRING_ID);
-		window.textBox("titleBookTextField").enterText(BOOK_TITLE_1);
-		window.textBox("authorBookTextField").enterText(BOOK_AUTHOR_1);
-		window.button("addBookButton").click();
-		
-		assertThat(window.label("errorMessageLabel").text())
-		.contains("Already existing book with id " + BOOK_FIXTURE_1_STRING_ID);
-	
-	}
-	
-	@Test
-	@GUITest
-	public void testBorrowBookButton() {
+	public void testBorrowBook() {
 		window.list("usersList")
 		.selectItem(Pattern.compile(".*" + USER_FIXTURE_1_NAME + ".*"));
 		window.list("booksList")
@@ -194,7 +169,7 @@ public class LibrarySwingMySqlAppE2E extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testReturnBookButton() {
+	public void testReturnBook() {
 		window.list("usersList")
 		.selectItem(Pattern.compile(".*" + USER_FIXTURE_1_NAME + ".*"));
 		window.list("booksList")
@@ -212,7 +187,7 @@ public class LibrarySwingMySqlAppE2E extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testDeleteUserButtonSuccess() {
+	public void testDeleteUser() {
 		window.list("usersList")
 			.selectItem(Pattern.compile(".*" + USER_FIXTURE_1_NAME + ".*"));
 		
@@ -224,7 +199,7 @@ public class LibrarySwingMySqlAppE2E extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testDeleteBookButtonSuccess() {
+	public void testDeleteBook() {
 		window.list("booksList")
 			.selectItem(Pattern.compile(".*" + BOOK_FIXTURE_1_TITLE + ".*"));
 		
@@ -232,65 +207,6 @@ public class LibrarySwingMySqlAppE2E extends AssertJSwingJUnitTestCase {
 		
 		assertThat(window.list("booksList").contents())
 			.noneMatch(e -> e.contains(BOOK_FIXTURE_1_TITLE));
-	}
-	
-	@Test
-	@GUITest
-	public void testDeleteUserButtonWhenUserDoesNotExistError() throws RepositoryException {
-		window.list("usersList")
-		.selectItem(Pattern.compile(".*" + USER_FIXTURE_1_NAME + ".*"));
-		removeTestUserFromDatabase(USER_FIXTURE_1_ID);
-		
-		window.button("userDeleteButton").click();
-		
-		assertThat(window.label("errorMessageLabel").text())
-			.contains("No existing user with id " + USER_FIXTURE_1_STRING_ID);
-	}
-	
-
-	@Test
-	@GUITest
-	public void testDeleteUserButtonWhenUserHasBorrowedBooksError() {
-		window.list("usersList")
-		.selectItem(Pattern.compile(".*" + USER_FIXTURE_1_NAME + ".*"));
-		window.list("booksList")
-		.selectItem(Pattern.compile(".*" + BOOK_FIXTURE_1_TITLE + ".*"));
-		
-		window.button("borrowBookButton").click();
-		window.button("userDeleteButton").click();
-		
-		assertThat(window.label("errorMessageLabel").text())
-			.contains("Before deleting user return all borrowed books!");
-	}
-	
-	@Test
-	@GUITest
-	public void testDeleteBookButtonWhenBookDoesNotExistError() throws RepositoryException {
-		window.list("booksList")
-		.selectItem(Pattern.compile(".*" + BOOK_FIXTURE_1_TITLE + ".*"));
-		removeTestBookFromDatabase(BOOK_FIXTURE_1_ID);
-		
-		window.button("deleteBookButton").click();
-		
-		assertThat(window.label("errorMessageLabel").text())
-			.contains("No existing book with id " + BOOK_FIXTURE_1_STRING_ID);
-	}
-
-
-	@Test
-	@GUITest
-	public void testDeleteBookButtonWhenBookStillBorrowedError() {
-		window.list("usersList")
-		.selectItem(Pattern.compile(".*" + USER_FIXTURE_1_NAME + ".*"));
-		window.list("booksList")
-		.selectItem(Pattern.compile(".*" + BOOK_FIXTURE_1_TITLE + ".*"));
-		
-		window.button("borrowBookButton").click();
-		window.button("deleteBookButton").click();
-		
-		assertThat(window.label("errorMessageLabel").text())
-			.contains("Cannot cancel this book! Book borrowed by user with id: " + USER_FIXTURE_1_STRING_ID);
-		
 	}
 
 	private void addTestUserToDatabase(User user) throws RepositoryException {

@@ -56,7 +56,7 @@ jobs:
       if: ${{ always() }}  
     - name: Archive Reports
       uses: actions/upload-artifact@v3
-      if: ${{ failure() }}
+      if: ${{ always() }}
       with:
         name: reports-jdk-${{ matrix.java }}
         path: |
