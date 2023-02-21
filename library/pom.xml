@@ -272,7 +272,7 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>add-test-resource</id>
+						<id>add-IT-resource</id>
 						<phase>generate-test-resources</phase>
 						<goals>
 							<goal>add-test-resource</goal>
@@ -281,6 +281,20 @@
 							<resources>
 								<resource>
 									<directory>src/it/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-E2E-resource</id>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>src/e2e/resources</directory>
 								</resource>
 							</resources>
 						</configuration>
@@ -344,7 +358,7 @@
 								</env>
 								<volumes>
 									<bind>
-										<volume>src/it/resources/database:/docker-entrypoint-initdb.d</volume>
+										<volume>src/e2e/resources/database:/docker-entrypoint-initdb.d</volume>
 									</bind>
 								</volumes>
 							</run>

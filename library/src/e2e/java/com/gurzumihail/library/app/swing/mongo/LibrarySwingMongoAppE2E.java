@@ -23,7 +23,6 @@ import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
-import com.mongodb.client.model.Filters;
 
 @RunWith(GUITestRunner.class)
 public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
@@ -218,19 +217,4 @@ public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
 				.append("author", book.getAuthor()).append("available", book.isAvailable())
 				.append("userId", book.getUserID());
 	}
-
-	private void removeTestUserFromDatabase(int id) {
-		mongoClient
-			.getDatabase(DATABASE_NAME)
-			.getCollection(USER_COLLECTION_NAME)
-			.deleteOne(Filters.eq("id", id));
-	}
-
-	private void removeTestBookFromDatabase(int id) {
-		mongoClient
-			.getDatabase(DATABASE_NAME)
-			.getCollection(BOOK_COLLECTION_NAME)
-			.deleteOne(Filters.eq("id", id));
-	}
-
 }

@@ -36,8 +36,6 @@ public class LibrarySwingMySqlAppE2E extends AssertJSwingJUnitTestCase {
 	
 	private static final String INSERT_USER = "INSERT INTO user (id, name) VALUES(?,?)";
 	private static final String INSERT_BOOK = "INSERT INTO book (id, title, author, available, userId) VALUES(?,?,?,?,?)";
-	private static final String DELETE_USER_BY_ID = "DELETE FROM user WHERE id=?";
-	private static final String DELETE_BOOK_BY_ID = "DELETE FROM book WHERE id=?";
 
 	
 	private static final int DEFAULT_USER_ID = -1;
@@ -228,26 +226,6 @@ public class LibrarySwingMySqlAppE2E extends AssertJSwingJUnitTestCase {
 			statement.setString(3, book.getAuthor());
 			statement.setInt(4, book.isAvailable()? 1 : 0);
 			statement.setInt(5,	book.getUserID());
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
-	}
-
-	private void removeTestUserFromDatabase(int id) throws RepositoryException {
-		try {
-			PreparedStatement statement = connection.prepareStatement(DELETE_USER_BY_ID);
-			statement.setInt(1,  id);
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
-	}
-
-	private void removeTestBookFromDatabase(int id) throws RepositoryException {
-		try {
-			PreparedStatement statement = connection.prepareStatement(DELETE_BOOK_BY_ID);
-			statement.setInt(1,  id);
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);

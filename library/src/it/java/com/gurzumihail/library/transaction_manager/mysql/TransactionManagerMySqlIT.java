@@ -28,7 +28,6 @@ import com.gurzumihail.library.model.User;
 import com.gurzumihail.library.repository.RepositoryException;
 import com.gurzumihail.library.repository.mysql.BookRepositoryMySql;
 import com.gurzumihail.library.repository.mysql.UserRepositoryMySql;
-import com.gurzumihail.library.transaction_manager.mysql.TransactionManagerMySql;
 
 public class TransactionManagerMySqlIT {
 	
