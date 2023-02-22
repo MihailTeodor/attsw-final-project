@@ -29,7 +29,6 @@
 		<docker.image.mysql>mysql/mysql-server:8.0.32</docker.image.mysql>
 		<!-- SONARCUBE-->
 		<sonar.coverage.exclusions>
-			**/library/App.java,
 			**/model/*,
 			**/library/view/swing/*,
 			**/library/app/swing/mongo/*,
@@ -180,7 +179,6 @@
 					<configuration>
 						<excludes>
 							<exclude>**/model/*.*</exclude>
-							<exclude>**/library/App.*</exclude>
 							<exclude>**/library/view/swing/*.*</exclude>
 							<exclude>**/library/app/swing/mongo/*.*</exclude>
 							<exclude>**/library/app/swing/mysql/*.*</exclude>
@@ -226,12 +224,15 @@
 					<configuration>
 						<excludedClasses>
 							<param>com.gurzumihail.library.model.*</param>
-							<param>com.gurzumihail.library.App.*</param>
+							<param>com.gurzumihail.library.transaction_manager.mongo.*</param>
+							<param>com.gurzumihail.library.transaction_manager.mysql.*</param>
 							<param>com.gurzumihail.library.view.swing.*</param>
 							<param>com.gurzumihail.library.app.swing.mongo.*</param>
 							<param>com.gurzumihail.library.app.swing.mysql.*</param>
 						</excludedClasses>
 						<excludedTestClasses>
+							<param>com.gurzumihail.library.transaction_manager.mongo.*</param>
+							<param>com.gurzumihail.library.transaction_manager.mysql.*</param>
 							<param>com.gurzumihail.library.view.swing.*</param>
 							<param>com.gurzumihail.library.app.swing.mongo.*</param>
 							<param>com.gurzumihail.library.app.swing.mysql.*</param>
