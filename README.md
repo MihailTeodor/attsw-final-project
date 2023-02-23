@@ -14,14 +14,14 @@
 # Library project for Advanced Programming Techniques course.
 ## Test-Driven Development, Build Automation, Continuous Integration
 
-The project consists in a very basic library managment of books and users, where users can borrow and return borrowed books. The focus of the project was the correct usage of advanced techniques for build automation and continuous integration where it's main focus was Test-Driven Development approach.
+The project consists in a very basic library managment of books and users, where users and books can be added and removed, and users can borrow and return borrowed books. The focus of the project is the correct usage of advanced techniques for build automation and continuous integration with a main focus on Test-Driven Development.
 
-The application was developed in Java 8 with a TDD approach and using advanced tools as Mutation Testing, Code Coverage, Docker and GitHub Actions as the CI server configured to build the application with Java 8 and 11. All the build process and dependency management is done with Maven. 
+The application has been developed in Java 8 with a TDD approach and using advanced tools as Mutation Testing, Code Coverage, Docker and GitHub Actions as the CI server configured to build the application with Java 8 and 11. All the build process and dependency management is done with Maven. 
 
 The GUI has been developed with swing and there are two versions of the application using either MySql or MongoDB as a database. The application has been developed and tested on Ubuntu 22.04.
 
 ## USAGE
-From the `pom.xml` directory, with the maven command `mvn clean verify` which will build and run all tests. There are two profiles that can be used for code coverage `-Pjacoco` and mutiation testing `-Ppit`.
+From the `pom.xml`'s location directory, run the maven command `mvn clean verify` which will build and run all tests. There are two profiles that can be used for code coverage `-Pjacoco` and mutiation testing `-Ppit`.
 
 Run `mvn clean verify -Pjacoco,pit` to build the application and run all tests, with the addition of test coverage and mutation testing alltogether.
 
@@ -29,9 +29,9 @@ In the `target` folder are generated two FatJARs one called `MONGO_app.jar-jar-w
 
 In order to run these jars:
 
-* first run the maven command `mvn docker:start` from the `pom.xml`'s directory which will start up both containers for the **MongoDB** and **MySql** and wait for the containers to be up and running (this will take something like 30 to 60 seconds).
+* first run from the `pom.xml`'s directory the maven command `mvn docker:start@mongodb` or `mvn docker:start@mysql` which will start up the container for the **MongoDB** or **MySql** respectively and wait for the containers to be up and running (this will take something like 30 to 60 seconds).
 *  Then, you can run the desired application, e.g. `java -jar MYSQL_app.jar-jar-with-dependencies.jar` for the MySql version from the `target` directory.
-*  Finally, use `mvn docker:stop` to stop and remove the two containers.
+*  Finally, use `mvn docker:stop@mongodb` or `mvn docker:stop@mysql` to stop and remove the started container.
 
 
 Each application can be used with an already existing database, by specifying the following arguments:
