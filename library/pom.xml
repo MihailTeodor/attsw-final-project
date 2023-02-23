@@ -44,7 +44,7 @@
 		<sonar.issue.ignore.multicriteria.e11.resourceKey>
         	**/LibraryViewSwingTest.java
     	</sonar.issue.ignore.multicriteria.e11.resourceKey>
-		
+
 		<!-- Disable rule for "Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'."-->
 		<sonar.issue.ignore.multicriteria.e12.ruleKey>
         	java:S117
@@ -68,7 +68,7 @@
 		<sonar.issue.ignore.multicriteria.e14.resourceKey>
         	**/LibrarySwingMongoAppE2E.java
     	</sonar.issue.ignore.multicriteria.e14.resourceKey>
-	
+
 		<sonar.issue.ignore.multicriteria.e15.ruleKey>
         	java:S3577
   		</sonar.issue.ignore.multicriteria.e15.ruleKey>
@@ -335,44 +335,57 @@
 				<groupId>io.fabric8</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
 				<version>${docker.maven.version}</version>
-				<configuration>
-					<images>
-						<image>
-							<name>${docker.image.mongodb}</name>
-							<run>
-								<ports>
-									<port>27017:27017</port>
-								</ports>
-							</run>
-						</image>
-						<image>
-							<name>${docker.image.mysql}</name>
-							<run>
-								<ports>
-									<port>3306:3306</port>
-								</ports>
-								<env>
-									<MYSQL_DATABASE>library</MYSQL_DATABASE>	
-									<MYSQL_USER>root</MYSQL_USER>								
-									<MYSQL_ROOT_PASSWORD>password</MYSQL_ROOT_PASSWORD>
-								 	<MYSQL_ROOT_HOST>%</MYSQL_ROOT_HOST>
-								</env>
-								<volumes>
-									<bind>
-										<volume>src/e2e/resources/database:/docker-entrypoint-initdb.d</volume>
-									</bind>
-								</volumes>
-							</run>
-						</image>
-					</images>
-				</configuration>
 				<executions>
 					<execution>
-						<id>docker-start</id>
+						<id>mongodb</id>
 						<phase>pre-integration-test</phase>
 						<goals>
 							<goal>start</goal>
 						</goals>
+						<configuration>
+							<images>
+								<image>
+									<alias>mongodb</alias>
+									<name>${docker.image.mongodb}</name>
+									<run>
+										<ports>
+											<port>27017:27017</port>
+										</ports>
+									</run>
+								</image>
+							</images>
+						</configuration>
+					</execution>
+					<execution>
+						<id>mysql</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>start</goal>
+						</goals>
+						<configuration>
+							<images>
+								<image>
+									<alias>mysql</alias>
+									<name>${docker.image.mysql}</name>
+									<run>
+										<ports>
+											<port>3306:3306</port>
+										</ports>
+										<env>
+											<MYSQL_DATABASE>library</MYSQL_DATABASE>
+											<MYSQL_USER>root</MYSQL_USER>
+											<MYSQL_ROOT_PASSWORD>password</MYSQL_ROOT_PASSWORD>
+											<MYSQL_ROOT_HOST>%</MYSQL_ROOT_HOST>
+										</env>
+										<volumes>
+											<bind>
+												<volume>src/e2e/resources/database:/docker-entrypoint-initdb.d</volume>
+											</bind>
+										</volumes>
+									</run>
+								</image>
+							</images>
+						</configuration>
 					</execution>
 					<execution>
 						<id>docker-stop</id>
