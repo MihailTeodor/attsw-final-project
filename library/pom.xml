@@ -134,8 +134,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
 			<version>${mysql.connector.version}</version>
 		</dependency>
 		<dependency>
@@ -248,12 +248,10 @@
 					<artifactId>sonar-maven-plugin</artifactId>
 					<version>3.9.1.2184</version>
 				</plugin>
-
 			</plugins>
 		</pluginManagement>
 
 		<plugins>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -407,15 +405,15 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<finalName>MONGO_app.jar</finalName>
+							<finalName>MONGO_app</finalName>
 							<archive>
 								<manifest>
 									<mainClass>com.gurzumihail.library.app.swing.mongo.LibrarySwingMongoApp</mainClass>
 								</manifest>
 							</archive>
+							<descriptors>
+								<descriptor>src/main/resources/MONGO.xml</descriptor>
+							</descriptors>
 						</configuration>
 					</execution>
 					<execution>
@@ -425,15 +423,15 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<finalName>MYSQL_app.jar</finalName>
+							<finalName>MYSQL_app</finalName>
 							<archive>
 								<manifest>
 									<mainClass>com.gurzumihail.library.app.swing.mysql.LibrarySwingMySqlApp</mainClass>
 								</manifest>
 							</archive>
+							<descriptors>
+								<descriptor>src/main/resources/MYSQL.xml</descriptor>
+							</descriptors>
 						</configuration>
 					</execution>
 				</executions>
