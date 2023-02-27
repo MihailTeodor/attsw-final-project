@@ -215,7 +215,7 @@
 					<version>1.10.3</version>
 					<executions>
 						<execution>
-							<phase>test</phase>
+							<phase>verify</phase>
 							<goals>
 								<goal>mutationCoverage</goal>
 							</goals>
