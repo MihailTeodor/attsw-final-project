@@ -208,7 +208,11 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 				int id = -1;
 				try {
 					id = Integer.parseInt(idBookTextField.getText());
-					libController.addBook(new Book(id, titleBookTextField.getText(), authorBookTextField.getText()));			
+					if(id > 0) {
+						libController.addBook(new Book(id, titleBookTextField.getText(), authorBookTextField.getText()));			
+					}else {
+						showError("please insert an id > 0!");
+					}
 				}catch(Exception ex) {
 					showError("please insert an integer id!");
 				}
@@ -243,7 +247,11 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 					int id = -1;
 					try {
 						id = Integer.parseInt(idUserTextField.getText());
-						libController.addUser(new User(id, nameUserTextField.getText(), new HashSet<>()));
+						if(id > 0) {
+							libController.addUser(new User(id, nameUserTextField.getText(), new HashSet<>()));
+						}else {
+							showError("please insert an id > 0!");
+						}
 					}catch(Exception ex) {
 						showError("please insert an integer id!");
 					}

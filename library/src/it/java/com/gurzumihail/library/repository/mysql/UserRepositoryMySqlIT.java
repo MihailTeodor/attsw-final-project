@@ -23,7 +23,6 @@ import org.testcontainers.utility.DockerImageName;
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
 import com.gurzumihail.library.repository.RepositoryException;
-import com.gurzumihail.library.repository.mysql.UserRepositoryMySql;
 
 public class UserRepositoryMySqlIT {
 	
