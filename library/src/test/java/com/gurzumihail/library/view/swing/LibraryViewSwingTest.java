@@ -544,6 +544,18 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 		
 		window.label("errorMessageLabel").requireText("please insert an id > 0!");
 	}
+	
+	@Test
+	@GUITest
+	public void testAddBookButtonShouldThrowIllegalArgumentExceptionIfInsertedIdIsZero() {
+		window.textBox("idBookTextField").enterText("0");
+		window.textBox("titleBookTextField").enterText(BOOK_TITLE_1);
+		window.textBox("authorBookTextField").enterText(BOOK_AUTHOR_1);
+
+		window.button("addBookButton").click();
+		
+		window.label("errorMessageLabel").requireText("please insert an id > 0!");
+	}
 
 	@Test
 	@GUITest
