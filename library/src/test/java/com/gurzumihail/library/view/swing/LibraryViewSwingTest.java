@@ -489,7 +489,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testAddUserButtonShouldThrowExceptionIfInsertedIdIsNotInt() {
+	public void testAddUserButtonShouldDisplayErrorMessageIfInsertedIdIsNotInt() {
 		window.textBox("idUserTextField").enterText(USER_NAME_1);
 		window.textBox("nameUserTextField").enterText(USER_NAME_2);
 
@@ -500,7 +500,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testAddUserButtonShouldThrowIllegalArgumentExceptionIfInsertedIdIsNotPositive() {
+	public void testAddUserButtonShouldDisplayErrorMessageIfInsertedIdIsNotPositive() {
 		window.textBox("idUserTextField").enterText("-3");
 		window.textBox("nameUserTextField").enterText(USER_NAME_2);
 
@@ -511,7 +511,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testAddUserButtonShouldThrowIllegalArgumentExceptionIfInsertedIdIsEqualToZero() {
+	public void testAddUserButtonShouldDisplayErrorMessageIfInsertedIdIsEqualToZero() {
 		window.textBox("idUserTextField").enterText("0");
 		window.textBox("nameUserTextField").enterText(USER_NAME_2);
 
@@ -534,7 +534,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testAddBookButtonShouldThrowExceptionIfInsertedIdIsNotInt() {
+	public void testAddBookButtonShouldDisplayErrorMessageIfInsertedIdIsNotInt() {
 		window.textBox("idBookTextField").enterText(BOOK_AUTHOR_1);
 		window.textBox("titleBookTextField").enterText(BOOK_TITLE_2);
 		window.textBox("authorBookTextField").enterText(BOOK_AUTHOR_2);
@@ -546,7 +546,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testAddBookButtonShouldThrowIllegalArgumentExceptionIfInsertedIdIsNotPositive() {
+	public void testAddBookButtonShouldDisplayErrorMessageIfInsertedIdIsNotPositive() {
 		window.textBox("idBookTextField").enterText("-3");
 		window.textBox("titleBookTextField").enterText(BOOK_TITLE_1);
 		window.textBox("authorBookTextField").enterText(BOOK_AUTHOR_1);
@@ -558,7 +558,7 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAddBookButtonShouldThrowIllegalArgumentExceptionIfInsertedIdIsEqualToZero() {
+	public void testAddBookButtonShouldDisplayErrorMessageIfInsertedIdIsEqualToZero() {
 		window.textBox("idBookTextField").enterText("0");
 		window.textBox("titleBookTextField").enterText(BOOK_TITLE_1);
 		window.textBox("authorBookTextField").enterText(BOOK_AUTHOR_1);
