@@ -245,7 +245,7 @@
 							<param>com.gurzumihail.library.app.swing.mysql.*</param>
 						</excludedTestClasses>
 						<mutators>
-							<mutator>DEFAULTS</mutator>
+							<mutator>STRONGER</mutator>
 						</mutators>
 						<mutationThreshold>100</mutationThreshold>
 					</configuration>
