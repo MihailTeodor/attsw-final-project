@@ -355,7 +355,13 @@
 									<run>
 										<ports>
 											<port>27017:27017</port>
+											<port>27018:27018</port>
+											<port>27019:27019</port>
 										</ports>
+										<wait>
+											<log>connecting to: mongodb</log>
+											<time>60000</time>
+										</wait>
 									</run>
 								</image>
 							</images>
@@ -376,6 +382,13 @@
 										<ports>
 											<port>3306:3306</port>
 										</ports>
+										<wait>
+											<tcp>
+												<ports>
+													<port>3306</port>
+												</ports>
+											</tcp>
+										</wait>
 										<env>
 											<MYSQL_DATABASE>library</MYSQL_DATABASE>
 											<MYSQL_USER>root</MYSQL_USER>

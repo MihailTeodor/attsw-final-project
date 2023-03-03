@@ -76,8 +76,8 @@ public class LibrarySwingMongoAppE2E extends AssertJSwingJUnitTestCase {
 		 
 		 application("com.gurzumihail.library.app.swing.mongo.LibrarySwingMongoApp")
 		 	.withArgs(
-		 			"--mongo-host=" + MONGO_HOST,
-		 			"--mongo-port=" + MONGO_PORT,
+		 			"--mongo-host-1=" + MONGO_HOST,
+		 			"--mongo-port-1=" + MONGO_PORT,
 		 			"--db-name=" + DATABASE_NAME,
 		 			"--db-user-collection=" + USER_COLLECTION_NAME,
 		 			"--db-book-collection=" + BOOK_COLLECTION_NAME
