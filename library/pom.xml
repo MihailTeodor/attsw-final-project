@@ -504,5 +504,14 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>jmv-9+</id>
+			<activation>
+				<jdk>[9,)</jdk>
+			</activation>
+			<properties>
+				<argLine>--add-opens=java.base/java.util=ALL-UNNAMED</argLine>
+			</properties>
+		</profile>
 	</profiles>
 </project>
