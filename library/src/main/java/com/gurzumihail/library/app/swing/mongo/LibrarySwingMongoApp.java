@@ -2,6 +2,7 @@ package com.gurzumihail.library.app.swing.mongo;
 
 import java.awt.EventQueue;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -26,13 +27,26 @@ import picocli.CommandLine.Option;
 public class LibrarySwingMongoApp implements Callable<Void> {
 	
 	private static final Logger LOGGER = LogManager.getLogger(LibrarySwingMongoApp.class);
+	private static final String LOCALHOST = "localhost";
 	
-	@Option(names = { "--mongo-host" }, description = "MongoDB host address")
-	private String mongoHost = "localhost";
+	@Option(names = { "--mongo-host-1" }, description = "MongoDB host-1 address")
+	private String mongoHost1 = LOCALHOST;
 	
-	@Option(names = { "--mongo-port" }, description = "MongoDB host port")
-	private int mongoPort = 27017;
+	@Option(names = { "--mongo-host-2" }, description = "MongoDB host-2 address")
+	private String mongoHost2 = LOCALHOST;
+
+	@Option(names = { "--mongo-host-3" }, description = "MongoDB host-3 address")
+	private String mongoHost3 = LOCALHOST;
+
+	@Option(names = { "--mongo-port-1" }, description = "MongoDB host-1 port")
+	private int mongoPort1 = 27017;
+
+	@Option(names = { "--mongo-port-2" }, description = "MongoDB host-2 port")
+	private int mongoPort2 = 27018;
 	
+	@Option(names = { "--mongo-port-3" }, description = "MongoDB host-3 port")
+	private int mongoPort3 = 27019;
+
 	@Option(names = { "--db-name" }, description = "Database name")
 	private String databaseName = "library";
 	
@@ -50,7 +64,11 @@ public class LibrarySwingMongoApp implements Callable<Void> {
 	public Void call() throws Exception {
 		EventQueue.invokeLater(() -> {
 			try {
-				MongoClient client = new MongoClient(new ServerAddress(mongoHost, mongoPort));
+				MongoClient client = new MongoClient(Arrays.asList(
+						   new ServerAddress(mongoHost1, mongoPort1),
+						   new ServerAddress(mongoHost2, mongoPort2),
+						   new ServerAddress(mongoHost3, mongoPort3)));
+						 
 				ClientSession session = client.startSession();
 				MongoDatabase database = client.getDatabase(databaseName);
 				List<String> existingCollections = database.listCollectionNames().into(new ArrayList<>());

@@ -35,7 +35,7 @@
 			**/library/app/swing/mysql/*,
 		</sonar.coverage.exclusions>
 
-		<sonar.issue.ignore.multicriteria>e11, e12, e13, e14, e15, e16</sonar.issue.ignore.multicriteria>
+		<sonar.issue.ignore.multicriteria>e11, e12, e13, e14, e15</sonar.issue.ignore.multicriteria>
 		<!-- Disable rule for "Tests should include assertions":
       SonarQube is not aware of AssertJ Swing -->
 		<sonar.issue.ignore.multicriteria.e11.ruleKey>
@@ -53,35 +53,28 @@
         	**/LibraryViewSwing.java
     	</sonar.issue.ignore.multicriteria.e12.resourceKey>
 
-		<!-- Disable rule for "String literals should not be duplicated " -->
+		<!-- Disable rule for "Test classes should comply with a naming convention " -->
 		<sonar.issue.ignore.multicriteria.e13.ruleKey>
-        	java:S1192
+        	java:S3577
   		</sonar.issue.ignore.multicriteria.e13.ruleKey>
 		<sonar.issue.ignore.multicriteria.e13.resourceKey>
-        	**/UserRepositoryMongo.java
+        	**/LibrarySwingMongoAppE2E.java
     	</sonar.issue.ignore.multicriteria.e13.resourceKey>
 
-		<!-- Disable rule for "Test classes should comply with a naming convention " -->
 		<sonar.issue.ignore.multicriteria.e14.ruleKey>
         	java:S3577
   		</sonar.issue.ignore.multicriteria.e14.ruleKey>
 		<sonar.issue.ignore.multicriteria.e14.resourceKey>
-        	**/LibrarySwingMongoAppE2E.java
+		    **/LibrarySwingMySqlAppE2E.java
     	</sonar.issue.ignore.multicriteria.e14.resourceKey>
 
+		<!-- Disable rule for "Reduce cognitive Complexity" -->
 		<sonar.issue.ignore.multicriteria.e15.ruleKey>
-        	java:S3577
+        	java:S3776
   		</sonar.issue.ignore.multicriteria.e15.ruleKey>
 		<sonar.issue.ignore.multicriteria.e15.resourceKey>
-		    **/LibrarySwingMySqlAppE2E.java
-    	</sonar.issue.ignore.multicriteria.e15.resourceKey>
-
-		<sonar.issue.ignore.multicriteria.e16.ruleKey>
-        	java:S3776
-  		</sonar.issue.ignore.multicriteria.e16.ruleKey>
-		<sonar.issue.ignore.multicriteria.e16.resourceKey>
 		    **/LibraryViewSwing.java
-    	</sonar.issue.ignore.multicriteria.e16.resourceKey>
+    	</sonar.issue.ignore.multicriteria.e15.resourceKey>
 
 	</properties>
 
@@ -245,7 +238,7 @@
 							<param>com.gurzumihail.library.app.swing.mysql.*</param>
 						</excludedTestClasses>
 						<mutators>
-							<mutator>DEFAULTS</mutator>
+							<mutator>STRONGER</mutator>
 						</mutators>
 						<mutationThreshold>100</mutationThreshold>
 					</configuration>
@@ -355,7 +348,13 @@
 									<run>
 										<ports>
 											<port>27017:27017</port>
+											<port>27018:27018</port>
+											<port>27019:27019</port>
 										</ports>
+										<wait>
+											<log>connecting to: mongodb</log>
+											<time>60000</time>
+										</wait>
 									</run>
 								</image>
 							</images>
@@ -376,6 +375,14 @@
 										<ports>
 											<port>3306:3306</port>
 										</ports>
+										<wait>
+											<tcp>
+												<ports>
+													<port>3306</port>
+												</ports>
+											</tcp>
+											<time>60000</time>
+										</wait>
 										<env>
 											<MYSQL_DATABASE>library</MYSQL_DATABASE>
 											<MYSQL_USER>root</MYSQL_USER>
@@ -497,6 +504,15 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>jmv-9+</id>
+			<activation>
+				<jdk>[9,)</jdk>
+			</activation>
+			<properties>
+				<argLine>--add-opens=java.base/java.util=ALL-UNNAMED</argLine>
+			</properties>
 		</profile>
 	</profiles>
 </project>

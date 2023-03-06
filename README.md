@@ -21,15 +21,15 @@ The application has been developed in Java 8 with a TDD approach and using advan
 The GUI has been developed with swing and there are two versions of the application using either MySql or MongoDB as a database. The application has been developed and tested on Ubuntu 22.04.
 
 ## USAGE
-From the `pom.xml`'s location directory, run the maven command `mvn clean verify` which will build and run all tests. There are two profiles that can be used for code coverage `-Pjacoco` and mutiation testing `-Ppit`.
+From the `pom.xml`'s location directory, run the maven command `mvn clean verify` which will build and run all tests. There are two profiles that can be used for code coverage `jacoco` and mutiation testing `pit`.
 
 Run `mvn clean verify -Pjacoco,pit` to build the application and run all tests, with the addition of test coverage and mutation testing alltogether.
 
-In the `target` folder are generated two FatJARs one called `MONGO_app.jar-jar-with-dependencies.jar` and `MYSQL_app.jar-jar-with-dependencies.jar` for the application using **MongoDB** and **MySql** respectively. 
+In the `target` folder are generated two FatJARs one called `MONGO_app-jar-with-dependencies.jar` and `MYSQL_app-jar-with-dependencies.jar` for the application using **MongoDB** and **MySql** respectively. 
 
 In order to run these jars:
 
-* first run from the `pom.xml`'s directory the maven command `mvn docker:start@mongodb` or `mvn docker:start@mysql` which will start up the container for the **MongoDB** or **MySql** respectively and wait for the containers to be up and running (this will take something like 30 to 60 seconds).
+* first run from the `pom.xml`'s directory the maven command `mvn docker:start@mongodb` or `mvn docker:start@mysql` which will start up the container for the **MongoDB** or **MySql** respectively.
 *  Then, you can run the desired application, e.g. `java -jar MYSQL_app.jar-jar-with-dependencies.jar` for the MySql version from the `target` directory.
 *  Finally, use `mvn docker:stop@mongodb` or `mvn docker:stop@mysql` to stop and remove the started container.
 
@@ -37,8 +37,12 @@ In order to run these jars:
 Each application can be used with an already existing database, by specifying the following arguments:
 
 * MONGO database configuration:
-  - `--mongo-host` -> MongoDB host address (default = `localhost`)
-  - `--mongo-port` -> MongoDB host port (default = `27017`);
+  - `--mongo-host-1` -> MongoDB host-1 address (default = `localhost`)
+  - `--mongo-host-2` -> MongoDB host-2 address (default = `localhost`)
+  - `--mongo-host-3` -> MongoDB host-3 address (default = `localhost`)
+  - `--mongo-port-1` -> MongoDB host-1 port (default = `27017`);
+  - `--mongo-port-2` -> MongoDB host-2 port (default = `27018`);
+  - `--mongo-port-3` -> MongoDB host-3 port (default = `27019`);
   - `--db-name` -> Database name (default = `library`);
   - `--db-user-collection` -> user collection name (default = `user`);
   - `--db-book-collection` -> book collection name (default = `book`);
@@ -49,8 +53,3 @@ Each application can be used with an already existing database, by specifying th
   - `--db-name` -> Database name (defaulkt = library);
   - `--db-user` -> username (default = `root`);
   - `--db-password` -> password (default = `password`);
-
-The MySql application uses the INIT.sql file in the `database` folder.
-
-
-

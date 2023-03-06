@@ -16,6 +16,13 @@ import com.mongodb.client.model.Filters;
 
 public class BookRepositoryMongo implements BookRepository {
 	
+	private static final String ID = "id";
+	private static final String AUTHOR = "author";
+	private static final String TITLE = "title";
+	private static final String AVAILABLE = "available";
+	private static final String USER_ID = "userId";
+	
+	
 	private MongoDatabase database;
 	private ClientSession session;
 	private MongoCollection<Document> bookCollection;
@@ -36,7 +43,7 @@ public class BookRepositoryMongo implements BookRepository {
 
 	@Override
 	public Book findById(int id) {
-		Document d = bookCollection.find(session, Filters.eq("id", id)).first();
+		Document d = bookCollection.find(session, Filters.eq(ID, id)).first();
 		if(d != null)
 			return fromDocumentToBook(d);
 		return null;
@@ -49,24 +56,24 @@ public class BookRepositoryMongo implements BookRepository {
 
 	@Override
 	public void update(Book book) {
-		bookCollection.replaceOne(session, Filters.eq("id", book.getId()), fromBookToDocument(book));
+		bookCollection.replaceOne(session, Filters.eq(ID, book.getId()), fromBookToDocument(book));
 	}
 
 	@Override
 	public void deleteById(int id) {
-		bookCollection.deleteOne(session, Filters.eq("id", id));
+		bookCollection.deleteOne(session, Filters.eq(ID, id));
 	}
 
 	private Book fromDocumentToBook(Document d) {
-		Book book = new Book(d.getInteger("id"), d.getString("title"), d.getString("author"));
-		book.setAvailable(d.getBoolean("available")); 
-		book.setUserID(d.getInteger("userId"));
+		Book book = new Book(d.getInteger(ID), d.getString(TITLE), d.getString(AUTHOR));
+		book.setAvailable(d.getBoolean(AVAILABLE)); 
+		book.setUserID(d.getInteger(USER_ID));
 		return book;
 	}
 	
 	private Document fromBookToDocument(Book book) {
-		return new Document().append("id", book.getId()).append("title", book.getTitle())
-				.append("author", book.getAuthor()).append("available", book.isAvailable())
-				.append("userId", book.getUserID());
+		return new Document().append(ID, book.getId()).append(TITLE, book.getTitle())
+				.append(AUTHOR, book.getAuthor()).append(AVAILABLE, book.isAvailable())
+				.append(USER_ID, book.getUserID());
 	}
 }
