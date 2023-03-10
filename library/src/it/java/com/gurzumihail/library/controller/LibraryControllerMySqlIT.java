@@ -22,7 +22,6 @@ import org.testcontainers.utility.DockerImageName;
 
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
-import com.gurzumihail.library.repository.RepositoryException;
 import com.gurzumihail.library.repository.mysql.BookRepositoryMySql;
 import com.gurzumihail.library.repository.mysql.UserRepositoryMySql;
 import com.gurzumihail.library.transaction_manager.mysql.TransactionManagerMySql;
@@ -63,7 +62,7 @@ public class LibraryControllerMySqlIT {
 	}
 	
 	@Before
-	public void setup() throws SQLException, RepositoryException {
+	public void setup() throws SQLException {
 		String rootJdbcURL = String.format("%s?user=%s&password=%s", mySql.getJdbcUrl(), mySql.getUsername(), mySql.getPassword());
 		connection = DriverManager.getConnection(rootJdbcURL);
 		connection.prepareStatement("DELETE from book").executeUpdate();
@@ -88,7 +87,7 @@ public class LibraryControllerMySqlIT {
 	}
 
 	@Test
-	public void testAllUsers() throws RepositoryException {
+	public void testAllUsers() throws SQLException {
 		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		userRepository.save(user);
 		
@@ -98,7 +97,7 @@ public class LibraryControllerMySqlIT {
 	}
 
 	@Test
-	public void testAllBooks() throws RepositoryException {
+	public void testAllBooks() throws SQLException {
 		addDefaultUser();
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		bookRepository.save(book);
@@ -120,7 +119,7 @@ public class LibraryControllerMySqlIT {
 	
 	
 	@Test
-	public void testAddBook() throws RepositoryException {
+	public void testAddBook() throws SQLException {
 		addDefaultUser();
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		
@@ -131,7 +130,7 @@ public class LibraryControllerMySqlIT {
 	
 	
 	@Test
-	public void testDeleteUser() throws RepositoryException {
+	public void testDeleteUser() throws SQLException {
 		User user = new User(USER_ID_1, USER_NAME_1, null);
 		userRepository.save(user);
 		
@@ -142,7 +141,7 @@ public class LibraryControllerMySqlIT {
 
 	
 	@Test
-	public void testDeleteBook() throws RepositoryException {
+	public void testDeleteBook() throws SQLException {
 		addDefaultUser();
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		bookRepository.save(book);
@@ -154,7 +153,7 @@ public class LibraryControllerMySqlIT {
 	
 	
 	@Test
-	public void testBorrowBook() throws RepositoryException {
+	public void testBorrowBook() throws SQLException {
 		addDefaultUser();
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		bookRepository.save(book);
@@ -168,7 +167,7 @@ public class LibraryControllerMySqlIT {
 	}
 	
 	@Test
-	public void testReturnBook() throws RepositoryException {
+	public void testReturnBook() throws SQLException {
 		addDefaultUser();
 		Book bookToReturn = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		bookToReturn.setAvailable(false);
@@ -186,7 +185,7 @@ public class LibraryControllerMySqlIT {
 	}
 	
 
-	private void addDefaultUser() throws RepositoryException {
+	private void addDefaultUser() throws SQLException {
 		User user = new User(-1, USER_NAME_1, Collections.emptySet());
 		
 		userRepository.save(user);

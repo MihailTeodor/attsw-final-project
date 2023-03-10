@@ -1,7 +1,6 @@
 package com.gurzumihail.library.repository.mysql;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,7 +21,6 @@ import org.testcontainers.utility.DockerImageName;
 
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
-import com.gurzumihail.library.repository.RepositoryException;
 
 public class BookRepositoryMySqlIT {
 	
@@ -51,7 +49,7 @@ public class BookRepositoryMySqlIT {
 	}
 	
 	@Before
-	public void setup() throws SQLException, RepositoryException {
+	public void setup() throws SQLException {
 		String rootJdbcURL = String.format("%s?user=%s&password=%s", mySql.getJdbcUrl(), mySql.getUsername(), mySql.getPassword());
 		connection = DriverManager.getConnection(rootJdbcURL);
 		connection.prepareStatement("DELETE from book").executeUpdate();
@@ -75,12 +73,12 @@ public class BookRepositoryMySqlIT {
 	
 	
 	@Test
-	public void testFindAllWhenDatabaseIsEmpty() throws RepositoryException {
+	public void testFindAllWhenDatabaseIsEmpty() throws SQLException {
 		assertThat(bookRepository.findAll()).isEmpty();
 	}
 	
 	@Test
-	public void  testFindAllWhenDatabaseIsNotEmpty() throws RepositoryException {
+	public void  testFindAllWhenDatabaseIsNotEmpty() throws SQLException {
 		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		book1.setAvailable(false);
@@ -94,21 +92,13 @@ public class BookRepositoryMySqlIT {
 	}
 	
 	@Test
-	public void testFindAllWhenExceptionIsThrown() throws SQLException {
-		connection.close();
-		
-		assertThatThrownBy(() -> bookRepository.findAll()).isInstanceOf(RepositoryException.class);
-	}
-	
-	
-	@Test
-	public void testFindByIdNotFound() throws RepositoryException {
+	public void testFindByIdNotFound() throws SQLException {
 		assertThat(bookRepository.findById(BOOK_ID_1)).isNull();
 
 	}
 	
 	@Test
-	public void testFindByIdFound() throws RepositoryException {
+	public void testFindByIdFound() throws SQLException {
 		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		addTestBookToDatabase(book1);
@@ -118,15 +108,7 @@ public class BookRepositoryMySqlIT {
 	}
 	
 	@Test
-	public void testFindByIdWhenExceptionIsThrown() throws SQLException {
-
-		connection.close();
-		
-		assertThatThrownBy(() -> bookRepository.findById(BOOK_ID_1)).isInstanceOf(RepositoryException.class);
-	}
-	
-	@Test
-	public void testSave() throws RepositoryException {
+	public void testSave() throws SQLException {
 		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		book2.setAvailable(false);
@@ -138,15 +120,7 @@ public class BookRepositoryMySqlIT {
 	}
 	
 	@Test
-	public void testSaveWhenExceptionIsThrown() throws SQLException {
-		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
-		connection.close();
-		
-		assertThatThrownBy(() -> bookRepository.save(book)).isInstanceOf(RepositoryException.class);
-	}
-	
-	@Test
-	public void testUpdate() throws RepositoryException {
+	public void testUpdate() throws SQLException {
 		Book bookToUpdate1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book bookToUpdate2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		addTestBookToDatabase(bookToUpdate1);
@@ -162,16 +136,7 @@ public class BookRepositoryMySqlIT {
 	}
 	
 	@Test
-	public void testUpdateWhenExceptionIsThrown() throws SQLException {
-		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
-		connection.close();
-		
-		assertThatThrownBy(() -> bookRepository.update(book)).isInstanceOf(RepositoryException.class);
-	}
-
-
-	@Test
-	public void testDeleteById() throws RepositoryException {
+	public void testDeleteById() throws SQLException {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		addTestBookToDatabase(book);
 		
@@ -180,16 +145,7 @@ public class BookRepositoryMySqlIT {
 		assertThat(getAllBooksFromDatabase()).isEmpty();
 	}
 	
-	@Test
-	public void testDeleteByIdWhenExceptionIsThrown() throws SQLException {
-		connection.close();
-		
-		assertThatThrownBy(() -> bookRepository.deleteById(BOOK_ID_1)).isInstanceOf(RepositoryException.class);
-	}
-
-	
-	private void addTestBookToDatabase(Book book) throws RepositoryException {
-		try {
+	private void addTestBookToDatabase(Book book) throws SQLException {
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO book (id, title, author, available, userId) VALUES(?,?,?,?,?)");
 			statement.setInt(1, book.getId());
 			statement.setString(2, book.getTitle());
@@ -197,21 +153,13 @@ public class BookRepositoryMySqlIT {
 			statement.setInt(4, book.isAvailable()? 1 : 0);
 			statement.setInt(5,	book.getUserID());
 			statement.executeUpdate();
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
 	}
 	
-	
-	private void addTestUserToDatabase(User user) throws RepositoryException {
-		try {
+	private void addTestUserToDatabase(User user) throws SQLException {
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO user (id, name) VALUES(?,?)");
 			statement.setInt(1,  user.getId());
 			statement.setString(2, user.getName());
 			statement.executeUpdate();
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
 	}
 	
 	private Book fromQueryResultToBook(ResultSet result) throws SQLException {
@@ -224,8 +172,7 @@ public class BookRepositoryMySqlIT {
 		return book;
 	}
 	
-	private List<Book> getAllBooksFromDatabase() throws RepositoryException{
-		try {
+	private List<Book> getAllBooksFromDatabase() throws SQLException{
 			PreparedStatement statement = connection.prepareStatement("SELECT * FROM book");
 			ResultSet result = statement.executeQuery();
 			
@@ -234,9 +181,5 @@ public class BookRepositoryMySqlIT {
 				books.add(fromQueryResultToBook(result));
 			}
 			return books;
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
 	}
-	
 }

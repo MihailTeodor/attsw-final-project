@@ -85,7 +85,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testAllUsers() throws RepositoryException {
+	public void testAllUsers() throws Exception {
 		List<User> users = asList(createTestUser(USER_ID_1, USER_NAME_1));
 		when(userRepository.findAll()).thenReturn(users);
 
@@ -129,7 +129,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testAllBorrowedBooks() throws RepositoryException {
+	public void testAllBorrowedBooks() throws Exception {
 		User user = createTestUser(USER_ID_1, USER_NAME_1);
 		List<Book> books = asList(createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));
 		when(userRepository.getRentedBooks(USER_ID_1)).thenReturn(books);
@@ -153,7 +153,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testAddUserWhenUserAlreadyExists() throws RepositoryException {
+	public void testAddUserWhenUserAlreadyExists() throws Exception {
 		User existingUser = createTestUser(USER_ID_1, USER_NAME_1);
 		User userToAdd = createTestUser(USER_ID_1, USER_NAME_2);
 		when(userRepository.findById(USER_ID_1)).thenReturn(existingUser);
@@ -167,7 +167,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testAddUserWhenUserDoesNotAlreadyExist() throws RepositoryException {
+	public void testAddUserWhenUserDoesNotAlreadyExist() throws Exception {
 		User userToAdd = createTestUser(USER_ID_1, USER_NAME_1);
 		when(userRepository.findById(USER_ID_1)).thenReturn(null);
 
@@ -191,7 +191,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testAddBookWhenBookAlreadyExists() throws RepositoryException {
+	public void testAddBookWhenBookAlreadyExists() throws Exception {
 		Book existingBook = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book bookToAdd = createTestBook(BOOK_ID_1, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		when(bookRepository.findById(BOOK_ID_1)).thenReturn(existingBook);
@@ -205,7 +205,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testAddBookWhenBookDoesNotAlreadyExist() throws RepositoryException {
+	public void testAddBookWhenBookDoesNotAlreadyExist() throws Exception {
 		Book bookToAdd = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		when(bookRepository.findById(BOOK_ID_1)).thenReturn(null);
 
@@ -229,7 +229,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testDeleteUserWhenUserDoesNotExist() throws RepositoryException {
+	public void testDeleteUserWhenUserDoesNotExist() throws Exception {
 		User userToDelete = createTestUser(USER_ID_1, USER_NAME_1);
 		when(userRepository.findById(USER_ID_1)).thenReturn(null);
 
@@ -242,7 +242,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testDeleteUserWhenExistsAndHasBorrowedBooks() throws RepositoryException {
+	public void testDeleteUserWhenExistsAndHasBorrowedBooks() throws Exception {
 		User userToDelete = createTestUser(USER_ID_1, USER_NAME_1);
 		Book book = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Set<Book> borrowedBooks = new HashSet<>();
@@ -259,7 +259,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testDeleteUserWhenUserExistsAndHasReturnedAllBorrowedBooks() throws RepositoryException {
+	public void testDeleteUserWhenUserExistsAndHasReturnedAllBorrowedBooks() throws Exception {
 		User userToDelete = createTestUser(USER_ID_1, USER_NAME_1);
 		Set<Book> rentedBooks = new HashSet<>();
 		userToDelete.setRentedBooks(rentedBooks);
@@ -285,7 +285,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testDeleteBookWhenBookDoesNotExist() throws RepositoryException {
+	public void testDeleteBookWhenBookDoesNotExist() throws Exception {
 		Book bookToDelete = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		when(bookRepository.findById(BOOK_ID_1)).thenReturn(null);
 
@@ -298,7 +298,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testDeleteBookWhenBookIsBorrowed() throws RepositoryException {
+	public void testDeleteBookWhenBookIsBorrowed() throws Exception {
 		Book bookToDelete = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		bookToDelete.setAvailable(false);
 		bookToDelete.setUserID(USER_ID_1);
@@ -313,7 +313,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testDeleteBookWhenBookExistsAndNotBorrowed() throws RepositoryException {
+	public void testDeleteBookWhenBookExistsAndNotBorrowed() throws Exception {
 		Book bookToDelete = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		when(bookRepository.findById(BOOK_ID_1)).thenReturn(bookToDelete);
 
@@ -337,7 +337,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testBorrowBookWhenBookIsNotAvailable() throws RepositoryException {
+	public void testBorrowBookWhenBookIsNotAvailable() throws Exception {
 		User user = createTestUser(USER_ID_1, USER_NAME_1);
 		Book book = createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		book.setAvailable(false);
@@ -353,7 +353,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testBorrowBookWhenBookIsAvailable() throws RepositoryException {
+	public void testBorrowBookWhenBookIsAvailable() throws Exception {
 		User user = spy(createTestUser(USER_ID_1, USER_NAME_1));
 		Book book = spy(createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));
 		when(bookRepository.findById(BOOK_ID_1)).thenReturn(book);
@@ -383,7 +383,7 @@ public class LibraryControllerTest {
 	}
 
 	@Test
-	public void testReturnBook() throws RepositoryException {
+	public void testReturnBook() throws Exception {
 		User user = spy(createTestUser(USER_ID_1, USER_NAME_1));
 		user.setId(1);
 		Book book = spy(createTestBook(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1));

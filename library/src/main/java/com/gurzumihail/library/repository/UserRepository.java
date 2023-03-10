@@ -7,16 +7,16 @@ import com.gurzumihail.library.model.User;
 
 public interface UserRepository {
 
-	List<User> findAll() throws RepositoryException;
+	List<User> findAll() throws Exception;
 	
-	User findById(int id) throws RepositoryException;
+	User findById(int id) throws Exception;
 	
-	void save(User user) throws RepositoryException;
+	void save(User user) throws Exception;
 	
-	void update(User user) throws RepositoryException;
+	void update(User user) throws Exception;
 	
-	void deleteById(int id) throws RepositoryException;
+	void deleteById(int id) throws Exception;
 	
-	List<Book> getRentedBooks(int id) throws RepositoryException;
+	List<Book> getRentedBooks(int id) throws Exception;
 	
 }
