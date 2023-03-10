@@ -222,21 +222,16 @@
 						</execution>
 					</executions>
 					<configuration>
-						<excludedClasses>
-							<param>com.gurzumihail.library.model.*</param>
-							<param>com.gurzumihail.library.transaction_manager.mongo.*</param>
-							<param>com.gurzumihail.library.transaction_manager.mysql.*</param>
-							<param>com.gurzumihail.library.view.swing.*</param>
-							<param>com.gurzumihail.library.app.swing.mongo.*</param>
-							<param>com.gurzumihail.library.app.swing.mysql.*</param>
-						</excludedClasses>
-						<excludedTestClasses>
-							<param>com.gurzumihail.library.transaction_manager.mongo.*</param>
-							<param>com.gurzumihail.library.transaction_manager.mysql.*</param>
-							<param>com.gurzumihail.library.view.swing.*</param>
-							<param>com.gurzumihail.library.app.swing.mongo.*</param>
-							<param>com.gurzumihail.library.app.swing.mysql.*</param>
-						</excludedTestClasses>
+						<targetClasses>
+							<param>com.gurzumihail.library.controller.*</param>
+							<param>com.gurzumihail.library.repository.mongo.*</param>
+							<param>com.gurzumihail.library.repository.mysql.*</param>
+						</targetClasses>
+						<targetTests>
+							<param>com.gurzumihail.library.controller.*</param>
+							<param>com.gurzumihail.library.repository.mongo.*</param>
+							<param>com.gurzumihail.library.repository.mysql.*</param>
+						</targetTests>
 						<mutators>
 							<mutator>STRONGER</mutator>
 						</mutators>
