@@ -1,7 +1,6 @@
 package com.gurzumihail.library.repository.mysql;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,7 +21,6 @@ import org.testcontainers.utility.DockerImageName;
 
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.model.User;
-import com.gurzumihail.library.repository.RepositoryException;
 
 public class UserRepositoryMySqlIT {
 	
@@ -55,7 +53,7 @@ public class UserRepositoryMySqlIT {
 	}
 	
 	@Before
-	public void setup() throws SQLException, RepositoryException {
+	public void setup() throws SQLException {
 		String rootJdbcURL = String.format("%s?user=%s&password=%s", mySql.getJdbcUrl(), mySql.getUsername(), mySql.getPassword());
 		connection = DriverManager.getConnection(rootJdbcURL);
 		connection.prepareStatement("DELETE from book").executeUpdate();
@@ -77,12 +75,12 @@ public class UserRepositoryMySqlIT {
 	}
 
 	@Test
-	public void testFindAllWhenDatabaseIsEmpty() throws RepositoryException {
+	public void testFindAllWhenDatabaseIsEmpty() throws SQLException {
 		assertThat(userRepository.findAll()).isEmpty();
 	}
 
 	@Test
-	public void testFindAllWhenDatabaseIsNotEmpty() throws RepositoryException {
+	public void testFindAllWhenDatabaseIsNotEmpty() throws SQLException {
 		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
 		addTestUserToDatabase(user1);
@@ -92,20 +90,12 @@ public class UserRepositoryMySqlIT {
 	}
 
 	@Test
-	public void testFindAllWhenExceptionIsThrown() throws SQLException {
-
-		connection.close();
-		
-		assertThatThrownBy(() -> userRepository.findAll()).isInstanceOf(RepositoryException.class);
-	}
-
-	@Test
-	public void testFindByIdNotFound() throws RepositoryException {
+	public void testFindByIdNotFound() throws SQLException {
 		assertThat(userRepository.findById(USER_ID_1)).isNull();
 	}
 	
 	@Test
-	public void testFindByIdFound() throws RepositoryException {
+	public void testFindByIdFound() throws SQLException {
 		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
 		addTestUserToDatabase(user1);
@@ -113,17 +103,9 @@ public class UserRepositoryMySqlIT {
 		
 		assertThat(userRepository.findById(USER_ID_2)).isEqualTo(user2);
 	}
-
+	
 	@Test
-	public void testFindByIdWhenExceptionIsThrown() throws SQLException {
-
-		connection.close();
-		
-		assertThatThrownBy(() -> userRepository.findById(USER_ID_1)).isInstanceOf(RepositoryException.class);
-	}
-
-	@Test
-	public void testSave() throws RepositoryException {
+	public void testSave() throws SQLException {
 		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		
 		userRepository.save(user);
@@ -132,15 +114,7 @@ public class UserRepositoryMySqlIT {
 	}
 	
 	@Test
-	public void testSaveWhenExceptionIsThrown() throws SQLException {
-		User user = new User(USER_ID_1, USER_NAME_1, null);
-		connection.close();
-		
-		assertThatThrownBy(() -> userRepository.save(user)).isInstanceOf(RepositoryException.class);
-	}
-	
-	@Test
-	public void testUpdate() throws RepositoryException {
+	public void testUpdate() throws SQLException {
 		User userToUpdate = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		addTestUserToDatabase(userToUpdate);
 		User updatedUser = new User(USER_ID_1, USER_NAME_2, Collections.emptySet());
@@ -149,17 +123,9 @@ public class UserRepositoryMySqlIT {
 		
 		assertThat(getAllUsersFromDatabase()).containsExactly(updatedUser);
 	}
-	
-	@Test
-	public void testUpdateWhenExceptionIsThrown() throws SQLException {
-		User user = new User(USER_ID_1, USER_NAME_1, null);
-		connection.close();
-		
-		assertThatThrownBy(() -> userRepository.update(user)).isInstanceOf(RepositoryException.class);
-	}
 
 	@ Test
-	public void testDeleteById() throws RepositoryException {
+	public void testDeleteById() throws SQLException {
 		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		addTestUserToDatabase(user);
 		
@@ -167,17 +133,9 @@ public class UserRepositoryMySqlIT {
 		
 		assertThat(getAllUsersFromDatabase()).isEmpty();
 	}
-	
-	@Test
-	public void testDeleteByIdWhenExceptionIsThrown() throws SQLException {
-
-		connection.close();
-		
-		assertThatThrownBy(() -> userRepository.deleteById(USER_ID_1)).isInstanceOf(RepositoryException.class);
-	}
 
 	@Test
-	public void testGetRentedBooksWhenUserHasNoBooksRented() throws RepositoryException {
+	public void testGetRentedBooksWhenUserHasNoBooksRented() throws SQLException {
 		User user = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		addTestUserToDatabase(user);
 		
@@ -185,7 +143,7 @@ public class UserRepositoryMySqlIT {
 	}
 	
 	@Test
-	public void testGetRentedBooksWhenUserHasBooksRented() throws RepositoryException {
+	public void testGetRentedBooksWhenUserHasBooksRented() throws SQLException {
 		User user = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
 		addTestUserToDatabase(user);
 		Book rentedBook = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
@@ -195,17 +153,8 @@ public class UserRepositoryMySqlIT {
 		
 		assertThat(userRepository.getRentedBooks(USER_ID_2)).containsExactly(rentedBook);
 	}
-
-	@Test
-	public void testGetRentedBooksWhenExceptionIsThrown() throws SQLException {
-
-		connection.close();
-		
-		assertThatThrownBy(() -> userRepository.getRentedBooks(USER_ID_1)).isInstanceOf(RepositoryException.class);
-	}
 	
-	private List<User> getAllUsersFromDatabase() throws RepositoryException {
-		try {
+	private List<User> getAllUsersFromDatabase() throws SQLException {
 			PreparedStatement statement = connection.prepareStatement("SELECT * FROM user");
 			ResultSet result = statement.executeQuery();
 			
@@ -214,32 +163,22 @@ public class UserRepositoryMySqlIT {
 				users.add(fromQueryResultToUser(result));
 			}
 			return users;
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
-		
 	}
 
-	
-	private void addTestUserToDatabase(User user) throws RepositoryException {
-		try {
+	private void addTestUserToDatabase(User user) throws SQLException {
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO user (id, name) VALUES(?,?)");
 			statement.setInt(1,  user.getId());
 			statement.setString(2, user.getName());
 			statement.executeUpdate();
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
 	}
 
-	private User fromQueryResultToUser(ResultSet result) throws SQLException, RepositoryException{
+	private User fromQueryResultToUser(ResultSet result) throws SQLException{
 			int id = result.getInt("id");
 			String name = result.getString("name");
 			return new User(id, name, Collections.emptySet());
 	}
 	
-	private void addTestBookToDatabase(Book book) throws RepositoryException {
-		try {
+	private void addTestBookToDatabase(Book book) throws SQLException {
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO book (id, title, author, available, userId) VALUES(?,?,?,?,?)");
 			statement.setInt(1, book.getId());
 			statement.setString(2, book.getTitle());
@@ -247,8 +186,5 @@ public class UserRepositoryMySqlIT {
 			statement.setInt(4, book.isAvailable()? 1 : 0);
 			statement.setInt(5,	book.getUserID());
 			statement.executeUpdate();
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
 	}	
 }

@@ -95,7 +95,7 @@ public class LibraryViewSwingMySqlIT extends AssertJSwingJUnitTestCase{
 
 	@Test
 	@GUITest
-	public void testAddUser() throws RepositoryException {
+	public void testAddUser() throws SQLException {
 		window.textBox("idUserTextField").enterText(USER_STR_ID_1);
 		window.textBox("nameUserTextField").enterText(USER_NAME_1);
 		window.button("addUserButton").click();
@@ -107,7 +107,7 @@ public class LibraryViewSwingMySqlIT extends AssertJSwingJUnitTestCase{
 
 	@Test
 	@GUITest
-	public void testAddBook() throws RepositoryException {
+	public void testAddBook() throws SQLException {
 		User defaultUser = new User(-1, "default", null);
 		userRepository.save(defaultUser);
 		
@@ -123,7 +123,7 @@ public class LibraryViewSwingMySqlIT extends AssertJSwingJUnitTestCase{
 	
 	@Test
 	@GUITest
-	public void testDeleteUser() throws RepositoryException {
+	public void testDeleteUser() throws SQLException {
 		User user = new User(USER_ID_1, USER_NAME_1, new HashSet<>());
 		userRepository.save(user);
 		
@@ -139,7 +139,7 @@ public class LibraryViewSwingMySqlIT extends AssertJSwingJUnitTestCase{
 	
 	@Test
 	@GUITest
-	public void testDeleteBook() throws RepositoryException {
+	public void testDeleteBook() throws SQLException {
 		User defaultUser = new User(-1, "default", null);
 		userRepository.save(defaultUser);
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
@@ -156,7 +156,7 @@ public class LibraryViewSwingMySqlIT extends AssertJSwingJUnitTestCase{
 	
 	@Test
 	@GUITest
-	public void testBorrowBook() throws RepositoryException {
+	public void testBorrowBook() throws SQLException {
 		User defaultUser = new User(-1, "default", null);
 		userRepository.save(defaultUser);
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
@@ -185,7 +185,7 @@ public class LibraryViewSwingMySqlIT extends AssertJSwingJUnitTestCase{
 
 	@Test
 	@GUITest
-	public void testReturnBook() throws RepositoryException, InterruptedException {
+	public void testReturnBook() throws SQLException {
 		User defaultUser = new User(-1, "default", null);
 		userRepository.save(defaultUser);	
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);

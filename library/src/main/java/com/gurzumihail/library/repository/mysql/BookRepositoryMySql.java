@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import com.gurzumihail.library.model.Book;
 import com.gurzumihail.library.repository.BookRepository;
-import com.gurzumihail.library.repository.RepositoryException;
 
 public class BookRepositoryMySql implements BookRepository {
 
@@ -29,7 +28,7 @@ public class BookRepositoryMySql implements BookRepository {
 	}
 
 	@Override
-	public List<Book> findAll() throws RepositoryException {
+	public List<Book> findAll() throws SQLException {
 			try (PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
 				ResultSet result = statement.executeQuery();
 
@@ -38,27 +37,23 @@ public class BookRepositoryMySql implements BookRepository {
 					books.add(fromQueryResultToBook(result));
 				}
 				return books;
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
+		} 
 	}
 
 	@Override
-	public Book findById(int id) throws RepositoryException {
+	public Book findById(int id) throws SQLException {
 		Book book = null;
 		try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
 				statement.setInt(1, id);
 				ResultSet result = statement.executeQuery();
 				if (result.next())
 					book = fromQueryResultToBook(result);
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
+		} 
 		return book;
 	}
 
 	@Override
-	public void save(Book book) throws RepositoryException {
+	public void save(Book book) throws SQLException {
 			try (PreparedStatement statement = connection.prepareStatement(INSERT)) {
 				statement.setInt(1, book.getId());
 				statement.setString(2, book.getTitle());
@@ -66,13 +61,19 @@ public class BookRepositoryMySql implements BookRepository {
 				statement.setInt(4, book.isAvailable() ? 1 : 0);
 				statement.setInt(5, book.getUserID());
 				statement.executeUpdate();
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
+		} 
 	}
 
 	@Override
-	public void update(Book book) throws RepositoryException {
+	public void deleteById(int id) throws SQLException {
+		try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
+			statement.setInt(1, id);
+			statement.executeUpdate();
+		} 
+	}
+
+	@Override
+	public void update(Book book) throws SQLException {
 			try (PreparedStatement statement = connection.prepareStatement(UPDATE)) {
 				statement.setString(1, book.getTitle());
 				statement.setString(2, book.getAuthor());
@@ -80,19 +81,7 @@ public class BookRepositoryMySql implements BookRepository {
 				statement.setInt(4, book.getUserID());
 				statement.setInt(5, book.getId());
 				statement.executeUpdate();
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public void deleteById(int id) throws RepositoryException {
-			try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
-				statement.setInt(1, id);
-				statement.executeUpdate();
-		} catch (SQLException e) {
-			throw new RepositoryException(e.getMessage(), e);
-		}
+		} 
 	}
 
 	private Book fromQueryResultToBook(ResultSet result) throws SQLException {

@@ -95,7 +95,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testAllUsers() throws RepositoryException {
+	public void testAllUsers() throws Exception {
 		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
 		when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
@@ -110,7 +110,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAllBooks() throws RepositoryException {
+	public void testAllBooks() throws Exception {
 		Book book1 = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Book book2 = new Book(BOOK_ID_2, BOOK_TITLE_2, BOOK_AUTHOR_2);
 		when(bookRepository.findAll()).thenReturn(Arrays.asList(book1, book2));
@@ -124,7 +124,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAddUserButtonSuccess() throws RepositoryException {
+	public void testAddUserButtonSuccess() throws Exception {
 		window.textBox("idUserTextField").enterText(USER_STR_ID_1);
 		window.textBox("nameUserTextField").enterText(USER_NAME_1);
 		when(userRepository.findById(USER_ID_1)).thenReturn(null);
@@ -138,7 +138,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAddBookButtonSuccess() throws RepositoryException {
+	public void testAddBookButtonSuccess() throws Exception {
 		window.textBox("idBookTextField").enterText(BOOK_STR_ID_1);
 		window.textBox("titleBookTextField").enterText(BOOK_TITLE_1);
 		window.textBox("authorBookTextField").enterText(BOOK_AUTHOR_1);
@@ -152,7 +152,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAddUserButtonError() throws RepositoryException {
+	public void testAddUserButtonError() throws Exception {
 		User existingUser = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		window.textBox("idUserTextField").enterText(USER_STR_ID_1);
 		window.textBox("nameUserTextField").enterText(USER_NAME_1);
@@ -166,7 +166,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testAddBookButtonError() throws RepositoryException {
+	public void testAddBookButtonError() throws Exception {
 		Book existingBook = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		window.textBox("idBookTextField").enterText(BOOK_STR_ID_1);
 		window.textBox("titleBookTextField").enterText(BOOK_TITLE_1);
@@ -181,7 +181,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testDeleteUserButtonSuccess() throws RepositoryException {
+	public void testDeleteUserButtonSuccess() throws Exception {
 		User userToDelete = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		GuiActionRunner.execute(
 				() -> libController.addUser(userToDelete));
@@ -197,7 +197,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testDeleteBookButtonSuccess() throws RepositoryException {
+	public void testDeleteBookButtonSuccess() throws Exception {
 		Book bookToDelete = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		GuiActionRunner.execute(
 				() -> libController.addBook(bookToDelete));
@@ -213,7 +213,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testUserDeleteButtonError() throws RepositoryException {
+	public void testUserDeleteButtonError() throws Exception {
 		User userToDelete = new User(USER_ID_1, USER_NAME_1, Collections.emptySet());
 		GuiActionRunner.execute(
 				() -> libView.getUserModelList().addElement(userToDelete));
@@ -229,7 +229,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testDeleteBookButtonError() throws RepositoryException {
+	public void testDeleteBookButtonError() throws Exception {
 		Book bookToDelete = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		GuiActionRunner.execute(
 				() -> libView.getBookModelList().addElement(bookToDelete));
@@ -245,7 +245,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testBorrowBookButtonSuccess() throws RepositoryException {
+	public void testBorrowBookButtonSuccess() throws Exception {
 		User user = new User(USER_ID_1, USER_NAME_1, new HashSet<>());
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		GuiActionRunner.execute(() -> {
@@ -266,7 +266,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testBorrowBookButtonError() throws RepositoryException {
+	public void testBorrowBookButtonError() throws Exception {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		User user1 = new User(USER_ID_1, USER_NAME_1, Collections.singleton(book));
 		User user2 = new User(USER_ID_2, USER_NAME_2, Collections.emptySet());
@@ -291,7 +291,7 @@ public class LibraryViewSwingIT extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testReturnBook() throws RepositoryException {
+	public void testReturnBook() throws Exception {
 		Book book = new Book(BOOK_ID_1, BOOK_TITLE_1, BOOK_AUTHOR_1);
 		Set<Book> borrowedBooks = new HashSet<>();
 		borrowedBooks.add(book);
