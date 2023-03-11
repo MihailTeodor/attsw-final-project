@@ -30,7 +30,6 @@
 		<!-- SONARCUBE-->
 		<sonar.coverage.exclusions>
 			**/model/*,
-			**/library/view/swing/*,
 			**/library/app/swing/mongo/*,
 			**/library/app/swing/mysql/*,
 		</sonar.coverage.exclusions>
@@ -201,7 +200,6 @@
 					<configuration>
 						<excludes>
 							<exclude>**/model/*.*</exclude>
-							<exclude>**/library/view/swing/*.*</exclude>
 							<exclude>**/library/app/swing/mongo/*.*</exclude>
 							<exclude>**/library/app/swing/mysql/*.*</exclude>
 						</excludes>

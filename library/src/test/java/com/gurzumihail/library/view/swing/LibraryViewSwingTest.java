@@ -210,6 +210,14 @@ public class LibraryViewSwingTest extends AssertJSwingJUnitTestCase {
 		window.list("usersList").selectItem(0);		
 		window.list("booksList").selectItem(0);		
 		window.button("borrowBookButton").requireEnabled();		
+		
+		window.list("usersList").clearSelection();
+		window.list("booksList").clearSelection();
+		window.list("booksList").selectItem(0);		
+		window.list("usersList").selectItem(0);		
+		window.button("borrowBookButton").requireEnabled();		
+		
+
 	}
 	
 	@Test

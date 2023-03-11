@@ -381,8 +381,8 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 		borrowedBooksList.addListSelectionListener(
 				e -> 
 					returnBorrowedBookButton.setEnabled(
-							(usersList.getSelectedIndex() != -1) &&
-							(borrowedBooksList.getSelectedIndex() != -1))
+							(borrowedBooksList.getSelectedIndex() != -1) &&
+							(usersList.getSelectedIndex() != -1))
 				);
 		borrowedBooksList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane1.setViewportView(borrowedBooksList);
@@ -405,8 +405,8 @@ public class LibraryViewSwing extends JFrame implements LibraryView{
 				e -> {
 					deleteBookButton.setEnabled(booksList.getSelectedIndex() != -1);
 					borrowBookButton.setEnabled(
-							(usersList.getSelectedIndex() != -1) &&
-							(booksList.getSelectedIndex() != -1));
+							(booksList.getSelectedIndex() != -1) &&
+							(usersList.getSelectedIndex() != -1));
 				});
 		
 		booksList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
