@@ -1,4 +1,4 @@
-[![Java CI with Maven on Linux](https://github.com/MihailTeodor/attsw-final-project/actions/workflows/maven.yml/badge.svg)](https://github.com/MihailTeodor/attsw-final-project/actions)
+[![Java CI with Maven on Linux](https://github.com/MihailTeodor/attsw-final-project/actions/workflows/linux.yml/badge.svg)](https://github.com/MihailTeodor/attsw-final-project/actions/workflows/linux.yml)
 [![Coverage Status](https://coveralls.io/repos/github/MihailTeodor/attsw-final-project/badge.svg?branch=master)](https://coveralls.io/github/MihailTeodor/attsw-final-project?branch=master)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=MihailTeodor_attsw-final-project&metric=bugs)](https://sonarcloud.io/summary/new_code?id=MihailTeodor_attsw-final-project)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=MihailTeodor_attsw-final-project&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=MihailTeodor_attsw-final-project)
